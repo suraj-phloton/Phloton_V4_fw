@@ -1,0 +1,39 @@
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12\test_platform.c:6:
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12/test_support.h:17:9: error: 'NEAR' macro redefined [-Werror,-Wmacro-redefined]
+   17 | #define NEAR(a,b,e) (fabsf((float)(a)-(float)(b)) <= (e))
+      |         ^
+C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\include\any-windows-any/minwindef.h:119:9: note: previous definition is here
+  119 | #define NEAR
+      |         ^
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12\test_platform.c:13:
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12/../../Core/Src/main.c:2:
+Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l451xx.h:624:17: error: expected member name or ';' after declaration specifiers
+  624 |   __IO uint32_t LPTR;        /*!< QUADSPI Low Power Timeout register,                 Address offset: 0x30 */
+      |   ~~~~~~~~~~~~~ ^
+C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\include\any-windows-any/minwinbase.h:354:15: note: expanded from macro 'LPTR'
+  354 | #define LPTR (LMEM_FIXED | LMEM_ZEROINIT)
+      |               ^
+C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\include\any-windows-any/minwinbase.h:343:20: note: expanded from macro 'LMEM_FIXED'
+  343 | #define LMEM_FIXED 0x0
+      |                    ^
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12\test_platform.c:13:
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12/../../Core/Src/main.c:2:
+Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l451xx.h:624:17: error: expected ')'
+C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\include\any-windows-any/minwinbase.h:354:15: note: expanded from macro 'LPTR'
+  354 | #define LPTR (LMEM_FIXED | LMEM_ZEROINIT)
+      |               ^
+C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\include\any-windows-any/minwinbase.h:343:20: note: expanded from macro 'LMEM_FIXED'
+  343 | #define LMEM_FIXED 0x0
+      |                    ^
+Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l451xx.h:624:17: note: to match this '('
+C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\include\any-windows-any/minwinbase.h:354:14: note: expanded from macro 'LPTR'
+  354 | #define LPTR (LMEM_FIXED | LMEM_ZEROINIT)
+      |              ^
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12\test_platform.c:15:
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12/../../Core/Src/phloton_nvs_stm32.c:31:11: error: cast to 'const volatile uint32_t *' (aka 'const volatile unsigned int *') from smaller integer type 'unsigned long' [-Werror,-Wint-to-pointer-cast]
+   31 |     src = (volatile const uint32_t *)(PH_NVS_BASE + slot * PH_NVS_PAGE_BYTES + offset);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12/../../Core/Src/phloton_nvs_stm32.c:86:11: error: cast to 'volatile uint32_t *' (aka 'volatile unsigned int *') from smaller integer type 'unsigned long' [-Werror,-Wint-to-pointer-cast]
+   86 |     dst = (volatile uint32_t *)(PH_NVS_BASE + slot * PH_NVS_PAGE_BYTES + offset);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5 errors generated.

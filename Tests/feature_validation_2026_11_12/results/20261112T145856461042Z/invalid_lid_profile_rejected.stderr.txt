@@ -1,0 +1,17 @@
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\main.c:91:2: error: #error "PH_LID_OPEN_LEVEL must be 0 or 1"
+   91 | #error "PH_LID_OPEN_LEVEL must be 0 or 1"
+      |  ^~~~~
+In file included from C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\main.c:3186:
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\phloton_feature_app.inc: In function 'Features_InterruptTick':
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\phloton_feature_app.inc:37:56: error: bitwise comparison always evaluates to false [-Werror=tautological-compare]
+   37 |     int raw_open = ((GPIOC->IDR >> LID_OPEN_PIN) & 1U) == PH_LID_OPEN_LEVEL;
+      |                                                        ^~
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\phloton_feature_app.inc: In function 'Features_Ready':
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\phloton_feature_app.inc:61:49: error: bitwise comparison always evaluates to true [-Werror=tautological-compare]
+   61 |            (((GPIOC->IDR >> LID_OPEN_PIN) & 1U) != PH_LID_OPEN_LEVEL);
+      |                                                 ^~
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\phloton_feature_app.inc: In function 'Features_Service':
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Core\Src\phloton_feature_app.inc:153:56: error: bitwise comparison always evaluates to false [-Werror=tautological-compare]
+  153 |     int raw_open = ((GPIOC->IDR >> LID_OPEN_PIN) & 1U) == PH_LID_OPEN_LEVEL;
+      |                                                        ^~
+cc1.exe: all warnings being treated as errors

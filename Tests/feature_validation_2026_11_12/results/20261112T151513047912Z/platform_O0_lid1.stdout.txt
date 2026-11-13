@@ -1,0 +1,26 @@
+{"feature":"F1 temperatures","id":"P01","description":"Real acquisition uses PC0-PC4 channel mapping and 16 samples each","status":"PASS","assertions":11}
+{"feature":"F1 temperatures","id":"P02","description":"Real GPIO and sampling-time configuration covers every sensor","status":"PASS","assertions":8}
+{"feature":"F1 temperatures","id":"P03","description":"ADC stuck conversion returns and requests direct shutdown","status":"PASS","assertions":5}
+{"feature":"F1 temperatures","id":"P04","description":"ADC timeout also terminates with a frozen DWT clock","status":"PASS","assertions":2}
+{"feature":"F1 temperatures","id":"P05","description":"ADC overrun and invalid channel rejected","status":"PASS","assertions":4}
+{"feature":"F1 temperatures","id":"P06","description":"Any individual sensor failure prevents cooling and latches fault","status":"PASS","assertions":15}
+{"feature":"F2 hot protection","id":"P07","description":"Hot cutoff pauses cooling keeps fans and retains user request","status":"PASS","assertions":5}
+{"feature":"F2 hot protection","id":"P08","description":"Cooling restarts only after recovery with fresh qualification","status":"PASS","assertions":6}
+{"feature":"F3 lid interlock","id":"P09","description":"IRQ cuts power before foreground can process lid","status":"PASS","assertions":3}
+{"feature":"F3 lid interlock","id":"P10","description":"Close after IRQ still waits 30 ms then restarts configuration","status":"PASS","assertions":4}
+{"feature":"F3 lid interlock","id":"P11","description":"Every startup phase can be cancelled by lid without latching a fault","status":"PASS","assertions":21}
+{"feature":"F3 lid interlock","id":"P12","description":"Fault or user OFF prevents automatic resume","status":"PASS","assertions":4}
+{"feature":"F2 hot protection","id":"P13","description":"IRQ stale-sample cutoff works during blocked foreground and rollover","status":"PASS","assertions":3}
+{"feature":"F4 buzzer","id":"P14","description":"TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone","status":"PASS","assertions":6}
+{"feature":"F4 buzzer","id":"P15","description":"Real interrupt services wake and sleep tone without advancing foreground","status":"PASS","assertions":5}
+{"feature":"F4 buzzer","id":"P16","description":"IRQ raises lid alarm at twenty seconds without any foreground service","status":"PASS","assertions":5}
+{"feature":"F4 buzzer","id":"P17","description":"Buzzer request preserves a preexisting interrupt mask","status":"PASS","assertions":1}
+{"feature":"F5 calibration NVS","id":"P18","description":"Save request rejects active cooling invalid key and invalid coefficients","status":"PASS","assertions":3}
+{"feature":"F5 calibration NVS","id":"P19","description":"Calibration region read checks and ECC recovery are restricted","status":"PASS","assertions":7}
+{"feature":"F6 voltage SOC LEDs","id":"P20","description":"Real indicator uses calibrated voltage masks and clears on OFF","status":"PASS","assertions":3}
+{"feature":"F6 voltage SOC LEDs","id":"P21","description":"Stale or missing battery sample clears indicator","status":"PASS","assertions":2}
+{"feature":"Integration telemetry","id":"P22","description":"UART row contains all 22 fields with five sensor values","status":"PASS","assertions":4}
+{"feature":"Regression","id":"P23","description":"Original current-code mapping PI limits and reset remain intact","status":"PASS","assertions":134}
+{"feature":"F3 lid interlock","id":"P24","description":"Simultaneous hot and lid inhibit needs both to recover","status":"PASS","assertions":3}
+{"feature":"F3 lid interlock","id":"P25","description":"Lid pulse during ADC publication cannot be lost by foreground flag clearing","status":"PASS","assertions":5}
+{"feature":"F5 calibration NVS","id":"P26","description":"Failed flash save retains active coefficients and reports failure","status":"PASS","assertions":2}

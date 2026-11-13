@@ -2,6 +2,39 @@
 #include "stm32l451xx.h"
 #include <stdint.h>
 #include <math.h>
+#include "phloton_features.h"
+#include "phloton_nvs.h"
+
+/* V4 PCB: Q21 open-collector detector, R126 pull-up. Override only after a board measurement. */
+#ifndef PH_LID_OPEN_LEVEL
+#define PH_LID_OPEN_LEVEL 1U
+#endif
+static ph_temperatures_t temperatures;
+static ph_calibration_t battery_calibration;
+static ph_battery_sampler_t battery_sampler;
+static ph_lid_t feature_lid;
+static ph_lid_t feature_alarm_lid;
+static volatile ph_buzzer_t feature_buzzer;
+static uint8_t hot_inhibited;
+static volatile uint8_t feature_irq_pause, feature_adc_fault, feature_irq_valid, feature_irq_hot = 1U;
+static volatile uint32_t feature_irq_sample_ms;
+static uint8_t adc_last_ok;
+volatile uint32_t adc_timeout_count, calibration_status, calibration_sequence;
+volatile uint32_t calibration_save_request;
+volatile ph_calibration_t calibration_pending;
+volatile float battery_soc_percent;
+static void Features_InterruptTick(void);
+static void Features_Service(void);
+static void Features_Pause(void);
+static int Features_Ready(void);
+static void Features_BeginStartup(void);
+static void Features_Beep(uint8_t kind);
+#ifndef PH_ADC_POLL_HOOK
+#define PH_ADC_POLL_HOOK(reg, mask, expected) ((void)0)
+#endif
+#ifndef PH_UART_BYTE_HOOK
+#define PH_UART_BYTE_HOOK(byte) ((void)0)
+#endif
 
 extern uint32_t SystemCoreClock;
 
@@ -51,6 +84,12 @@ extern uint32_t SystemCoreClock;
  *   *_ISNS_V_PER_A           : 50 mOhm x 100 (INA181A3) = 5.0 V/A per schematic
  */
 #define FAN_ISNS_ENABLE       0U   /* Until real pins and calibration are confirmed. */
+#if FAN_ISNS_ENABLE
+#error "Existing fan placeholders conflict with the five temperature inputs; use verified reworked pins."
+#endif
+#if PH_LID_OPEN_LEVEL != 0 && PH_LID_OPEN_LEVEL != 1
+#error "PH_LID_OPEN_LEVEL must be 0 or 1"
+#endif
 
 
 
@@ -229,6 +268,7 @@ static const uint8_t colors[6][3] =
 ///////////////////////////////////////////////////
 static void ADC1_Init(void);
 static uint16_t ADC1_Read(uint32_t channel);
+static int ADC1_Wait(volatile uint32_t *reg, uint32_t mask, uint32_t expected);
 static float ADC_ToVoltage(uint16_t adc);
 
 float BATT_ReadVoltage(void);
@@ -811,20 +851,25 @@ static uint8_t LM51772_Readback(void)
 {
     uint8_t ok = 1U;
 
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_MFR_D0, &rb_mfr_d0);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_MFR_D1, &rb_mfr_d1);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_MFR_D2, &rb_mfr_d2);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_MFR_D3, &rb_mfr_d3);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_MFR_D4, &rb_mfr_d4);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_MFR_D9, &rb_mfr_d9);
+    uint8_t value;
+#define READ_PUBLISH(reg, destination) do { \
+    if (I2C1_ReadReg(LM51772_ADDR, (reg), &value)) (destination) = value; else ok = 0U; \
+} while (0)
+    READ_PUBLISH(REG_MFR_D0, rb_mfr_d0);
+    READ_PUBLISH(REG_MFR_D1, rb_mfr_d1);
+    READ_PUBLISH(REG_MFR_D2, rb_mfr_d2);
+    READ_PUBLISH(REG_MFR_D3, rb_mfr_d3);
+    READ_PUBLISH(REG_MFR_D4, rb_mfr_d4);
+    READ_PUBLISH(REG_MFR_D9, rb_mfr_d9);
 
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_USB_PD_CONTROL, &rb_usb_pd_control);
+    READ_PUBLISH(REG_USB_PD_CONTROL, rb_usb_pd_control);
 
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_ILIM_THRESHOLD, &rb_ilim);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_VOUT_LSB, &rb_vout_lsb);
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_VOUT_MSB, &rb_vout_msb);
+    READ_PUBLISH(REG_ILIM_THRESHOLD, rb_ilim);
+    READ_PUBLISH(REG_VOUT_LSB, rb_vout_lsb);
+    READ_PUBLISH(REG_VOUT_MSB, rb_vout_msb);
 
-    ok &= I2C1_ReadReg(LM51772_ADDR, REG_STATUS_BYTE, &rb_status_byte);
+    READ_PUBLISH(REG_STATUS_BYTE, rb_status_byte);
+#undef READ_PUBLISH
 
     rb_vout_code = ((uint16_t)rb_vout_msb << 8U) | rb_vout_lsb;
     rb_vout_voltage_v = (float)rb_vout_code * 0.020f;
@@ -845,7 +890,7 @@ float BATT_ReadVoltage(void)
     batt_vsns_adc_raw = ADC1_Read(BATT_VSNS_CHANNEL);
     batt_vsns_adc_voltage = ADC_ToVoltage(batt_vsns_adc_raw);
 
-    batt_voltage = batt_vsns_adc_voltage * BATT_DIVIDER_RATIO;
+    batt_voltage = adc_last_ok ? ph_battery_voltage(&battery_calibration, batt_vsns_adc_raw) : NAN;
     return batt_voltage;
 }
 
@@ -858,7 +903,7 @@ float BATT_ReadCurrent(void)
     }
     batt_isns_adc_raw = (uint16_t)(sum / 32U);
     batt_isns_adc_voltage = ADC_ToVoltage(batt_isns_adc_raw);
-    batt_current = (batt_isns_adc_voltage - 1.65f) / 0.132f;
+    batt_current = adc_last_ok ? ph_battery_current(&battery_calibration, batt_isns_adc_raw) : NAN;
         return batt_current;
     }
 
@@ -927,9 +972,9 @@ static void ADC1_Init(void)
     GPIOB->MODER |= (3U << 0U) | (3U << 2U);
     GPIOB->PUPDR &= ~((3U << 0U) | (3U << 2U));
 
-    /* PC1 = COLDSINK_TEMP (ADC1_IN2)  -- NEW: PI / LED input */
-    GPIOC->MODER |= (3U << (1U * 2U));
-    GPIOC->PUPDR &= ~(3U << (1U * 2U));
+    /* PC0..PC4: ambient, cold, hot, flask top, flask bottom. */
+    GPIOC->MODER |= 0x3FFU;
+    GPIOC->PUPDR &= ~0x3FFU;
 
     /* PC4 = FLASK_BOTTOM_TEMP (ADC1_IN13) */
     GPIOC->MODER |= (3U << (4U * 2U));
@@ -959,9 +1004,7 @@ static void ADC1_Init(void)
 
     /* Calibrate ADC while disabled */
     ADC1->CR |= (1U << 31U);
-    while (ADC1->CR & (1U << 31U))
-    {
-    }
+    if (!ADC1_Wait(&ADC1->CR, 1U << 31U, 0U)) return;
 
     /* 12-bit resolution */
     ADC1->CFGR &= ~(3U << 3U);
@@ -969,6 +1012,7 @@ static void ADC1_Init(void)
     /* Channels 2, 5 and 6: SMPR1 (channel 2 = COLDSINK_TEMP, NEW) */
     ADC1->SMPR1 &= ~((7U << 6U) | (7U << 15U) | (7U << 18U));
     ADC1->SMPR1 |=  ((7U << 6U) | (7U << 15U) | (7U << 18U));
+    ADC1->SMPR1 |= (7U << 3U) | (7U << 9U) | (7U << 12U);
 
     /* Channels 13, 15 and 16: SMPR2 (bits (ch-10)*3) */
     ADC1->SMPR2 &= ~((7U << 9U) | (7U << 15U) | (7U << 18U));
@@ -987,27 +1031,49 @@ static void ADC1_Init(void)
     ADC1->ISR = (1U << 0U);
     ADC1->CR |= (1U << 0U);
 
-    while ((ADC1->ISR & (1U << 0U)) == 0U)
-    {
-    }
+    (void)ADC1_Wait(&ADC1->ISR, 1U, 1U);
 }
 
 /////////////////////////////////////////
 static uint16_t ADC1_Read(uint32_t channel)
 {
+    adc_last_ok = 0U;
+    if (channel > 18U || feature_adc_fault) return 0U;
     /* Select one conversion */
     ADC1->SQR1 &= ~((0xFU << 0U) | (0x1FU << 6U));
     ADC1->SQR1 |= (channel << 6U);
 
     /* Clear EOC and start conversion */
-    ADC1->ISR = (1U << 2U);
+    ADC1->ISR = ADC_ISR_EOC | ADC_ISR_EOS | ADC_ISR_OVR;
     ADC1->CR |= (1U << 2U);
+    PH_ADC_POLL_HOOK(&ADC1->ISR, ADC_ISR_EOC, ADC_ISR_EOC);
 
-    while ((ADC1->ISR & (1U << 2U)) == 0U)
-    {
+    if (!ADC1_Wait(&ADC1->ISR, 1U << 2U, 1U << 2U)) {
+        ADC1->CR |= ADC_CR_ADSTP;
+        return 0U;
     }
-
+    if (ADC1->ISR & ADC_ISR_OVR) {
+        feature_adc_fault = 1U;
+        GPIOB->BSRR = 1UL << (13U + 16U);
+        return 0U;
+    }
+    adc_last_ok = 1U;
     return (uint16_t)ADC1->DR;
+}
+
+static int ADC1_Wait(volatile uint32_t *reg, uint32_t mask, uint32_t expected)
+{
+    uint32_t start = DWT->CYCCNT, guard = 200000U;
+    while ((*reg & mask) != expected) {
+        PH_ADC_POLL_HOOK(reg, mask, expected);
+        if ((uint32_t)(DWT->CYCCNT - start) >= SystemCoreClock / 500U || --guard == 0U) {
+            adc_timeout_count++;
+            feature_adc_fault = 1U;
+            GPIOB->BSRR = 1UL << (13U + 16U);
+            return 0;
+        }
+    }
+    return 1;
 }
 
 static float ADC_ToVoltage(uint16_t adc)
@@ -1090,6 +1156,7 @@ volatile uint32_t control_cycles          = 0U;
 void SysTick_Handler(void)
 {
     ms_ticks++;
+    Features_InterruptTick();
 }
 
 static void SysTick_Start(void)
@@ -1144,7 +1211,7 @@ void PI_Reset(void)
 }
 
 /////////////////////////////////////////////////////////
-static uint8_t tec_fault_latched = 0U;
+static volatile uint8_t tec_fault_latched = 0U;
 
 static void TEC_StopFault(uint32_t reason)
 {
@@ -1247,8 +1314,8 @@ static uint8_t TEC_ApplyIlimCode(uint8_t code)
 /* Called every CONTROL_PERIOD_MS (= Ts). */
 static void TEC_ControlStep(void)
 {
-    uint8_t valid = 0U;
-    float raw = NTC_ReadTemperatureC(COLDSINK_TEMP_CHANNEL, &valid);
+    uint8_t valid = (uint8_t)ph_temperatures_fresh(&temperatures, ms_ticks);
+    float raw = temperatures.c[PH_COLD];
 
     control_cycles++;
     flask_bottom_raw_c = raw;
@@ -1524,12 +1591,15 @@ static void LED_UpdateFromTemperature(void)
 
 static void Startup_Task(void)
 {
+    if (!Features_Ready()) { Features_Pause(); return; }
+    if (ledState && startup_state == STARTUP_IDLE) Features_BeginStartup();
     if ((startup_state == STARTUP_IDLE) || (startup_state == STARTUP_RUN))
     {
         return;
     }
 
     LM51772_StartupStep();
+    if (!Features_Ready()) { Features_Pause(); return; }
 
     if (startup_state == STARTUP_FAIL)
     {
@@ -1551,8 +1621,8 @@ static void Startup_Task(void)
     	  }
         lm51772_init_ok = 1U;
 
-        ShiftRegister_Write(0x1FU);
-        led_pattern = 0x1FU;
+        led_pattern = ph_soc_leds(batt_voltage, battery_sampler.valid);
+        ShiftRegister_Write(led_pattern);
         led_is_on = 1U;
 
         /* Start RED; LED_UpdateFromTemperature() switches to GREEN */
@@ -1604,6 +1674,7 @@ void Button_LED_Task(void)
 
         if (ledState == 0U)
         {
+            Features_Beep(PH_BEEP_SLEEP);
             /* ---------- OFF ---------- */
 
             /* LM51772 -> NRST LOW = converter off  */
@@ -1634,6 +1705,7 @@ void Button_LED_Task(void)
           }
 
            firmware_error = 0U;
+            Features_Beep(PH_BEEP_WAKE);
 
 
             ILIM_THRESHOLD_VALUE   = ILIM_CODE_MIN;
@@ -1645,9 +1717,8 @@ void Button_LED_Task(void)
             lm51772_ack = 0U;
             lm51772_init_ok = 0U;
 
-            GPIOB->BSRR = (1U << 13U);
-            startup_t0 = ms_ticks;
-            startup_state = STARTUP_RESET_WAIT;
+            /* Interlocks qualify in Startup_Task before releasing converter reset. */
+            startup_state = STARTUP_IDLE;
             firmware_stage = 2U;
         }
     }
@@ -2807,7 +2878,7 @@ static uint8_t FAT32_FindRootEntry(
                 else if ((file_sector[off + 11] & 0x18U) == 0 &&
                          file_sector[off + 11] != 0x0F &&
                          memcmp(&file_sector[off],
-                                "TEC_LOG CSV", 11) == 0)
+                                "TEC_V2  CSV", 11) == 0)
                 {
                     *entry_sector = base + s;
                     *entry_offset = off;
@@ -2964,7 +3035,7 @@ static uint8_t SD_LogInit(void)
         if (!SD_ReadBlock(log_dir_sector, file_sector)) return 0;
         uint8_t *e = &file_sector[log_dir_offset];
         memset(e, 0, 32);
-        memcpy(e, "TEC_LOG CSV", 11);
+        memcpy(e, "TEC_V2  CSV", 11);
         e[11] = 0x20;
         wr16(&e[20], (uint16_t)(cluster >> 16));
         wr16(&e[26], (uint16_t)cluster);
@@ -2979,7 +3050,9 @@ static uint8_t SD_LogInit(void)
         static const uint8_t header[] =
             "time_ms,tec_voltage_V,tec_current_A,battery_voltage_V,battery_current_A,"
             "cs_fan_current_A,hs_fan_current_A,pi_provisional_integral_A,"
-            "cold_side_temp_C,cold_side_valid\r\n";
+            "cold_side_temp_C,cold_side_valid,ambient_temp_C,hot_sink_temp_C,flask_top_temp_C,"
+            "flask_bottom_temp_C,temp_valid_mask,soc_voltage_percent,hot_inhibited,lid_open,"
+            "cooling_requested,fault,calibration_status,temp_sequence\r\n";
         if (!FAT32_LogWrite(header, (uint32_t)(sizeof(header) - 1U)))
         {
             log_ready = 0;
@@ -3034,6 +3107,7 @@ static void ESP_UART_Write(const char *buf, uint32_t len)
         }
 
         USART2->TDR = (uint8_t)buf[i];
+        PH_UART_BYTE_HOOK((uint8_t)buf[i]);
     }
 #else
     (void)buf; (void)len;
@@ -3063,8 +3137,8 @@ static void LogValue(char out[16], float value)
 
 static uint8_t Log_Sample(uint32_t time_ms)
 {
-    uint8_t valid = 0U;
-    float temp = NTC_ReadTemperatureC(COLDSINK_TEMP_CHANNEL, &valid);
+    uint8_t valid = (uint8_t)((temperatures.valid_mask >> PH_COLD) & 1U);
+    float temp = temperatures.c[PH_COLD];
 
     const float cols[8] = {
         tec_voltage, tec_current, batt_voltage, batt_current,
@@ -3080,11 +3154,21 @@ static uint8_t Log_Sample(uint32_t time_ms)
 #endif
     if (!valid) strcpy(v[7], "NA");
 
-    char line[256];
+    char extra[5][16];
+    LogValue(extra[0], temperatures.c[PH_AMBIENT]);
+    LogValue(extra[1], temperatures.c[PH_HOT]);
+    LogValue(extra[2], temperatures.c[PH_TOP]);
+    LogValue(extra[3], temperatures.c[PH_BOTTOM]);
+    LogValue(extra[4], battery_sampler.valid ? battery_soc_percent : NAN);
+    char line[512];
     int n = snprintf(line, sizeof line,
-                     "%lu,%s,%s,%s,%s,%s,%s,%s,%s,%u\r\n",
+                     "%lu,%s,%s,%s,%s,%s,%s,%s,%s,%u,%s,%s,%s,%s,%lu,%s,%u,%u,%lu,%lu,%lu,%lu\r\n",
                      (unsigned long)time_ms, v[0], v[1], v[2], v[3],
-                     v[4], v[5], v[6], v[7], (unsigned)valid);
+                     v[4], v[5], v[6], v[7], (unsigned)valid,
+                     extra[0], extra[1], extra[2], extra[3], (unsigned long)temperatures.valid_mask,
+                     extra[4], (unsigned)hot_inhibited, (unsigned)feature_lid.open,
+                     (unsigned long)ledState, (unsigned long)firmware_error,
+                     (unsigned long)calibration_status, (unsigned long)temperatures.sequence);
     if (n < 0 || (size_t)n >= sizeof line) return 0U;
 
     /* Send the same CSV row to ESP and SD: no separate column mapping. */
@@ -3099,6 +3183,7 @@ static uint8_t Log_Sample(uint32_t time_ms)
 }
 
 static uint32_t control_missed_deadlines;
+#include "phloton_feature_app.inc"
 
 /* ---------------- MAIN ---------------- */
 int main(void)
@@ -3116,11 +3201,24 @@ int main(void)
     SystemClock_Config();
     Clock_Init();
     DWT_Init();
+    ph_lid_init(&feature_lid, 0U);
+    ph_lid_init(&feature_alarm_lid, 0U);
+    ph_battery_init(&battery_sampler, 0U);
+    {
+        uint32_t sequence;
+        calibration_status = (uint32_t)ph_nvs_load(&ph_nvs_stm32, &battery_calibration, &sequence);
+        calibration_sequence = sequence;
+        calibration_pending = battery_calibration;
+    }
+    Features_BuzzerInit();
 
     ESP_UART_Init();                         /* PA2 -> ESP32 GPIO16 */
     {
         static const char hdr[] = "\r\nTEC logger started. Vtec/Itec = TEC voltage/current, Vbat/Ibat = battery, Ifan_cs = cold side fan current, Ifan_hs = hot side fan current, PIint = PI integral term, Tcold = cold sink temperature\r\n";
         ESP_UART_Write(hdr, (uint32_t)(sizeof(hdr) - 1U));
+        ESP_UART_Write("Build: ", 7U);
+        ESP_UART_Write(firmware_build_id, (uint32_t)(sizeof(firmware_build_id) - 1U));
+        ESP_UART_Write("\r\n", 2U);
     }
 
     /* SD init uses TIM2 at 1 MHz; the PLL makes APB1/TIM2 80 MHz. */
@@ -3167,15 +3265,14 @@ int main(void)
         {
             uint32_t now;
             GPIO_Inputs_Read();
+            Features_Service();
             Button_LED_Task();
             Startup_Task();
             now = ms_ticks;
 
             if ((uint32_t)(now - t_meas) >= MEASURE_PERIOD_MS)
             {
-                t_meas += MEASURE_PERIOD_MS;
-                batt_voltage = BATT_ReadVoltage();
-                batt_current = BATT_ReadCurrent();
+                t_meas = now;
                 tec_voltage = TEC_ReadVoltage();
                 tec_current = TEC_ReadCurrent();
                 cs_fan_current = CSFAN_ReadCurrent();
@@ -3209,7 +3306,7 @@ int main(void)
 
             if ((uint32_t)(now - t_log) >= SD_LOG_PERIOD_MS)
             {
-                t_log += SD_LOG_PERIOD_MS;
+                t_log = now;
                 if (!Log_Sample(now)) log_failed = 1U;
             }
         }

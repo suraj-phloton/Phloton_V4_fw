@@ -1,0 +1,1347 @@
+{
+  "client_date": "2026-11-12",
+  "executed_utc": "2026-11-12T15:09:05.257990+00:00",
+  "checks": [
+    {
+      "name": "compile_features_O0",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [],
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-g",
+        "-fstack-protector-strong",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-O0",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\test_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\features_O0.exe"
+      ]
+    },
+    {
+      "name": "features_O0",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "T01",
+          "description": "All five independent channels and nominal conversion",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T02",
+          "description": "Each individual channel invalidates independently",
+          "status": "PASS",
+          "assertions": 10
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T03",
+          "description": "Exhaustive 4096-code sweep for every sensor",
+          "status": "PASS",
+          "assertions": 40960
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T04",
+          "description": "Open short near rails and invalid output pointer",
+          "status": "PASS",
+          "assertions": 19
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T05",
+          "description": "Freshness boundary and unsigned wraparound",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "H01",
+          "description": "Exact trip and recovery with retained hysteresis",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "H02",
+          "description": "NaN infinity invalid flag and recovery",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "H03",
+          "description": "Repeated noisy temperature sweep stays inhibited until recovery",
+          "status": "PASS",
+          "assertions": 30000
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "L01",
+          "description": "Boot closed requires 30 ms qualification",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "L02",
+          "description": "Open immediate closure bounce resets timer",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "L03",
+          "description": "Closure qualification crosses millisecond rollover",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B01",
+          "description": "Wake beep on-off-on boundaries",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B02",
+          "description": "Sleep tone and preemption",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B03",
+          "description": "Twenty second lid alarm and ten second repeat",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B04",
+          "description": "Alarm cancellation on close and OFF resets delay",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B05",
+          "description": "Buzzer and alarm wraparound",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N01",
+          "description": "Blank storage nominal defaults without flash writes",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N02",
+          "description": "Save reboot load newer record and previous copy retained",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N03",
+          "description": "Every single-bit record corruption falls back to previous copy",
+          "status": "PASS",
+          "assertions": 1536
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N04",
+          "description": "Power interruption at every write and partial double-word byte",
+          "status": "PASS",
+          "assertions": 256
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N05",
+          "description": "Erase and read failure preserve usable calibration",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N06",
+          "description": "Both corrupted records use defaults without writes",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N07",
+          "description": "Invalid calibration cannot erase or program flash",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N08",
+          "description": "Calibrated conversion fractional counts signed current and invalid raw",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S01",
+          "description": "User mapping endpoints clamp and intermediate levels",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S02",
+          "description": "Every LED threshold below exact and above",
+          "status": "PASS",
+          "assertions": 17
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S03",
+          "description": "Missing invalid and nonfinite battery data never lights bars",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S04",
+          "description": "Monotonic voltage sweep with five-bit-only output",
+          "status": "PASS",
+          "assertions": 40002
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S05",
+          "description": "ESP32 sampling 25 current then 25 voltage at 10 ms and 50 ms rest",
+          "status": "PASS",
+          "assertions": 105
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S06",
+          "description": "Fractional averages and no sample replay after delayed foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S07",
+          "description": "Acquisition failure resets complete batch and invalidates old average",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S08",
+          "description": "Sampling deadline crosses unsigned rollover",
+          "status": "PASS",
+          "assertions": 3
+        }
+      ],
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\features_O0.exe"
+      ]
+    },
+    {
+      "name": "compile_platform_O0_lid0",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [],
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-g",
+        "-fstack-protector-strong",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-O0",
+        "-DPH_LID_OPEN_LEVEL=0",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\support",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\test_platform.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O0_lid0.exe"
+      ]
+    },
+    {
+      "name": "platform_O0_lid0",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "P01",
+          "description": "Real acquisition uses PC0-PC4 channel mapping and 16 samples each",
+          "status": "PASS",
+          "assertions": 11
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P02",
+          "description": "Real GPIO and sampling-time configuration covers every sensor",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P03",
+          "description": "ADC stuck conversion returns and requests direct shutdown",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P04",
+          "description": "ADC timeout also terminates with a frozen DWT clock",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P05",
+          "description": "ADC overrun and invalid channel rejected",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P06",
+          "description": "Any individual sensor failure prevents cooling and latches fault",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P07",
+          "description": "Hot cutoff pauses cooling keeps fans and retains user request",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P08",
+          "description": "Cooling restarts only after recovery with fresh qualification",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P09",
+          "description": "IRQ cuts power before foreground can process lid",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P10",
+          "description": "Close after IRQ still waits 30 ms then restarts configuration",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P11",
+          "description": "Every startup phase can be cancelled by lid without latching a fault",
+          "status": "PASS",
+          "assertions": 21
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P12",
+          "description": "Fault or user OFF prevents automatic resume",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P13",
+          "description": "IRQ stale-sample cutoff works during blocked foreground and rollover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P14",
+          "description": "TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P15",
+          "description": "Real interrupt services wake and sleep tone without advancing foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P16",
+          "description": "IRQ raises lid alarm at twenty seconds without any foreground service",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P17",
+          "description": "Buzzer request preserves a preexisting interrupt mask",
+          "status": "PASS",
+          "assertions": 1
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P18",
+          "description": "Save request rejects active cooling invalid key and invalid coefficients",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P19",
+          "description": "Calibration region read checks and ECC recovery are restricted",
+          "status": "PASS",
+          "assertions": 7
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P20",
+          "description": "Real indicator uses calibrated voltage masks and clears on OFF",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P21",
+          "description": "Stale or missing battery sample clears indicator",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "Integration telemetry",
+          "id": "P22",
+          "description": "UART row contains all 22 fields with five sensor values",
+          "status": "PASS",
+          "assertions": 4
+        }
+      ],
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O0_lid0.exe"
+      ]
+    },
+    {
+      "name": "compile_platform_O0_lid1",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [],
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-g",
+        "-fstack-protector-strong",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-O0",
+        "-DPH_LID_OPEN_LEVEL=1",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\support",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\test_platform.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O0_lid1.exe"
+      ]
+    },
+    {
+      "name": "platform_O0_lid1",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "P01",
+          "description": "Real acquisition uses PC0-PC4 channel mapping and 16 samples each",
+          "status": "PASS",
+          "assertions": 11
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P02",
+          "description": "Real GPIO and sampling-time configuration covers every sensor",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P03",
+          "description": "ADC stuck conversion returns and requests direct shutdown",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P04",
+          "description": "ADC timeout also terminates with a frozen DWT clock",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P05",
+          "description": "ADC overrun and invalid channel rejected",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P06",
+          "description": "Any individual sensor failure prevents cooling and latches fault",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P07",
+          "description": "Hot cutoff pauses cooling keeps fans and retains user request",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P08",
+          "description": "Cooling restarts only after recovery with fresh qualification",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P09",
+          "description": "IRQ cuts power before foreground can process lid",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P10",
+          "description": "Close after IRQ still waits 30 ms then restarts configuration",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P11",
+          "description": "Every startup phase can be cancelled by lid without latching a fault",
+          "status": "PASS",
+          "assertions": 21
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P12",
+          "description": "Fault or user OFF prevents automatic resume",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P13",
+          "description": "IRQ stale-sample cutoff works during blocked foreground and rollover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P14",
+          "description": "TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P15",
+          "description": "Real interrupt services wake and sleep tone without advancing foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P16",
+          "description": "IRQ raises lid alarm at twenty seconds without any foreground service",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P17",
+          "description": "Buzzer request preserves a preexisting interrupt mask",
+          "status": "PASS",
+          "assertions": 1
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P18",
+          "description": "Save request rejects active cooling invalid key and invalid coefficients",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P19",
+          "description": "Calibration region read checks and ECC recovery are restricted",
+          "status": "PASS",
+          "assertions": 7
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P20",
+          "description": "Real indicator uses calibrated voltage masks and clears on OFF",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P21",
+          "description": "Stale or missing battery sample clears indicator",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "Integration telemetry",
+          "id": "P22",
+          "description": "UART row contains all 22 fields with five sensor values",
+          "status": "PASS",
+          "assertions": 4
+        }
+      ],
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O0_lid1.exe"
+      ]
+    },
+    {
+      "name": "compile_features_O2",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [],
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-g",
+        "-fstack-protector-strong",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-O2",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\test_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\features_O2.exe"
+      ]
+    },
+    {
+      "name": "features_O2",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "T01",
+          "description": "All five independent channels and nominal conversion",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T02",
+          "description": "Each individual channel invalidates independently",
+          "status": "PASS",
+          "assertions": 10
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T03",
+          "description": "Exhaustive 4096-code sweep for every sensor",
+          "status": "PASS",
+          "assertions": 40960
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T04",
+          "description": "Open short near rails and invalid output pointer",
+          "status": "PASS",
+          "assertions": 19
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "T05",
+          "description": "Freshness boundary and unsigned wraparound",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "H01",
+          "description": "Exact trip and recovery with retained hysteresis",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "H02",
+          "description": "NaN infinity invalid flag and recovery",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "H03",
+          "description": "Repeated noisy temperature sweep stays inhibited until recovery",
+          "status": "PASS",
+          "assertions": 30000
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "L01",
+          "description": "Boot closed requires 30 ms qualification",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "L02",
+          "description": "Open immediate closure bounce resets timer",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "L03",
+          "description": "Closure qualification crosses millisecond rollover",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B01",
+          "description": "Wake beep on-off-on boundaries",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B02",
+          "description": "Sleep tone and preemption",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B03",
+          "description": "Twenty second lid alarm and ten second repeat",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B04",
+          "description": "Alarm cancellation on close and OFF resets delay",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "B05",
+          "description": "Buzzer and alarm wraparound",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N01",
+          "description": "Blank storage nominal defaults without flash writes",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N02",
+          "description": "Save reboot load newer record and previous copy retained",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N03",
+          "description": "Every single-bit record corruption falls back to previous copy",
+          "status": "PASS",
+          "assertions": 1536
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N04",
+          "description": "Power interruption at every write and partial double-word byte",
+          "status": "PASS",
+          "assertions": 256
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N05",
+          "description": "Erase and read failure preserve usable calibration",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N06",
+          "description": "Both corrupted records use defaults without writes",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N07",
+          "description": "Invalid calibration cannot erase or program flash",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "N08",
+          "description": "Calibrated conversion fractional counts signed current and invalid raw",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S01",
+          "description": "User mapping endpoints clamp and intermediate levels",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S02",
+          "description": "Every LED threshold below exact and above",
+          "status": "PASS",
+          "assertions": 17
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S03",
+          "description": "Missing invalid and nonfinite battery data never lights bars",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S04",
+          "description": "Monotonic voltage sweep with five-bit-only output",
+          "status": "PASS",
+          "assertions": 40002
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S05",
+          "description": "ESP32 sampling 25 current then 25 voltage at 10 ms and 50 ms rest",
+          "status": "PASS",
+          "assertions": 105
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S06",
+          "description": "Fractional averages and no sample replay after delayed foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S07",
+          "description": "Acquisition failure resets complete batch and invalidates old average",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "S08",
+          "description": "Sampling deadline crosses unsigned rollover",
+          "status": "PASS",
+          "assertions": 3
+        }
+      ],
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\features_O2.exe"
+      ]
+    },
+    {
+      "name": "compile_platform_O2_lid0",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [],
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-g",
+        "-fstack-protector-strong",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-O2",
+        "-DPH_LID_OPEN_LEVEL=0",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\support",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\test_platform.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O2_lid0.exe"
+      ]
+    },
+    {
+      "name": "platform_O2_lid0",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "P01",
+          "description": "Real acquisition uses PC0-PC4 channel mapping and 16 samples each",
+          "status": "PASS",
+          "assertions": 11
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P02",
+          "description": "Real GPIO and sampling-time configuration covers every sensor",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P03",
+          "description": "ADC stuck conversion returns and requests direct shutdown",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P04",
+          "description": "ADC timeout also terminates with a frozen DWT clock",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P05",
+          "description": "ADC overrun and invalid channel rejected",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P06",
+          "description": "Any individual sensor failure prevents cooling and latches fault",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P07",
+          "description": "Hot cutoff pauses cooling keeps fans and retains user request",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P08",
+          "description": "Cooling restarts only after recovery with fresh qualification",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P09",
+          "description": "IRQ cuts power before foreground can process lid",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P10",
+          "description": "Close after IRQ still waits 30 ms then restarts configuration",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P11",
+          "description": "Every startup phase can be cancelled by lid without latching a fault",
+          "status": "PASS",
+          "assertions": 21
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P12",
+          "description": "Fault or user OFF prevents automatic resume",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P13",
+          "description": "IRQ stale-sample cutoff works during blocked foreground and rollover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P14",
+          "description": "TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P15",
+          "description": "Real interrupt services wake and sleep tone without advancing foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P16",
+          "description": "IRQ raises lid alarm at twenty seconds without any foreground service",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P17",
+          "description": "Buzzer request preserves a preexisting interrupt mask",
+          "status": "PASS",
+          "assertions": 1
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P18",
+          "description": "Save request rejects active cooling invalid key and invalid coefficients",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P19",
+          "description": "Calibration region read checks and ECC recovery are restricted",
+          "status": "PASS",
+          "assertions": 7
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P20",
+          "description": "Real indicator uses calibrated voltage masks and clears on OFF",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P21",
+          "description": "Stale or missing battery sample clears indicator",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "Integration telemetry",
+          "id": "P22",
+          "description": "UART row contains all 22 fields with five sensor values",
+          "status": "PASS",
+          "assertions": 4
+        }
+      ],
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O2_lid0.exe"
+      ]
+    },
+    {
+      "name": "compile_platform_O2_lid1",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [],
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-g",
+        "-fstack-protector-strong",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-O2",
+        "-DPH_LID_OPEN_LEVEL=1",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\support",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\test_platform.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O2_lid1.exe"
+      ]
+    },
+    {
+      "name": "platform_O2_lid1",
+      "status": "PASS",
+      "returncode": 0,
+      "expected_success": true,
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "P01",
+          "description": "Real acquisition uses PC0-PC4 channel mapping and 16 samples each",
+          "status": "PASS",
+          "assertions": 11
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P02",
+          "description": "Real GPIO and sampling-time configuration covers every sensor",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P03",
+          "description": "ADC stuck conversion returns and requests direct shutdown",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P04",
+          "description": "ADC timeout also terminates with a frozen DWT clock",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P05",
+          "description": "ADC overrun and invalid channel rejected",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P06",
+          "description": "Any individual sensor failure prevents cooling and latches fault",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P07",
+          "description": "Hot cutoff pauses cooling keeps fans and retains user request",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P08",
+          "description": "Cooling restarts only after recovery with fresh qualification",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P09",
+          "description": "IRQ cuts power before foreground can process lid",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P10",
+          "description": "Close after IRQ still waits 30 ms then restarts configuration",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P11",
+          "description": "Every startup phase can be cancelled by lid without latching a fault",
+          "status": "PASS",
+          "assertions": 21
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P12",
+          "description": "Fault or user OFF prevents automatic resume",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P13",
+          "description": "IRQ stale-sample cutoff works during blocked foreground and rollover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P14",
+          "description": "TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P15",
+          "description": "Real interrupt services wake and sleep tone without advancing foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P16",
+          "description": "IRQ raises lid alarm at twenty seconds without any foreground service",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P17",
+          "description": "Buzzer request preserves a preexisting interrupt mask",
+          "status": "PASS",
+          "assertions": 1
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P18",
+          "description": "Save request rejects active cooling invalid key and invalid coefficients",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P19",
+          "description": "Calibration region read checks and ECC recovery are restricted",
+          "status": "PASS",
+          "assertions": 7
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P20",
+          "description": "Real indicator uses calibrated voltage masks and clears on OFF",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P21",
+          "description": "Stale or missing battery sample clears indicator",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "Integration telemetry",
+          "id": "P22",
+          "description": "UART row contains all 22 fields with five sensor values",
+          "status": "PASS",
+          "assertions": 4
+        }
+      ],
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\.build\\platform_O2_lid1.exe"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "Core\\Src\\main.c": "73fa8147739e26879d66e8097bf888d61513843903c5898b02fb7272e702e4e0",
+    "Core\\Src\\phloton_features.c": "d7dab6b88310b1dfacfde75965a8ad298ca250f00a551f46056830d8199f280d",
+    "Core\\Src\\phloton_feature_app.inc": "07a7b77bcb9a2041d048942926ff767470547d9eb7d2054c2f57463c5c90cb79",
+    "Core\\Src\\phloton_nvs.c": "5968f086bf466b11cb9c9fe59ef1c5916823db581b4501563dbaee0db9b5bd2f",
+    "Core\\Src\\phloton_nvs_stm32.c": "d0c0b7be00a0a58859abd9070abf132d2b147f9865e4a190bde12e23b88c7a9c",
+    "Core\\Src\\stm32l4xx_hal_msp.c": "0152c615733df6227f43b5fcf321b87ef03375585798ec9366fb02853ce5e983",
+    "Core\\Src\\stm32l4xx_it.c": "809440c02776d9b80d12143818469cac06ff87bf0fe51bb6d0d309b17dbe531a",
+    "Core\\Src\\syscalls.c": "1589f3d61a3625fb2e4604c6ffd48518fda29d1b78bf774b2d91d76236e1777f",
+    "Core\\Src\\sysmem.c": "ae7da85ddcf68727218002cace4d885d363c9e1cd1955ca1b10ccc5e3075b9b5",
+    "Core\\Src\\system_stm32l4xx.c": "e8a6b52966fe3a1ac5ecd8afb23b90bf33af553da6a9cb051795e49ca97483f3",
+    "Core\\Inc\\phloton_features.h": "419d2226774d672227493288e3430acd380d1e9a11f3724f65ffd627d3b4a55c",
+    "Core\\Inc\\phloton_nvs.h": "7173a738c031d66887d55f624a7eb67197dc626f9bd570c72d617db9b0419240",
+    "STM32L451RETX_FLASH.ld": "c8d60146a77c703ef8793d38fade9d78f131180216e0b8135bf27021213ea197",
+    "STM32L451RETX_RAM.ld": "ecf76c4549f41d6a2dea612d1b3762404f4d3673ea72fb53d6b3ccf4feb8f59e"
+  },
+  "physical_board_tests": "NOT RUN",
+  "passed": 12,
+  "failed": 0
+}

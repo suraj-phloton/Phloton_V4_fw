@@ -1,0 +1,7 @@
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12\test_features.c:115:6: error: misleading indentation; statement is not part of the previous 'for' [-Werror,-Wmisleading-indentation]
+  115 |     }finish();
+      |      ^
+C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\feature_validation_2026_11_12\test_features.c:112:5: note: previous statement is here
+  112 |     for(unsigned stop=0;stop<8;stop++)for(unsigned bytes=0;bytes<8;bytes++){
+      |     ^
+1 error generated.

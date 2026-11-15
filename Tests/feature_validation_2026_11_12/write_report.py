@@ -3,12 +3,17 @@ from collections import defaultdict
 import json
 from pathlib import Path
 import sys
+import os
 
 HERE = Path(__file__).resolve().parent
 
 
-def write_report(run):
-    run = Path(run)
+def write_report(run, report_path=None):
+    run = Path(run).resolve()
+    report_path = Path(report_path or HERE / 'TEST_RESULTS.md').resolve()
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    def link(path):
+        return Path(os.path.relpath(path, report_path.parent)).as_posix()
     data = json.loads((run / 'summary.json').read_text(encoding='utf-8'))
     grouped = defaultdict(dict)
     executions = assertions = 0
@@ -20,12 +25,14 @@ def write_report(run):
             item['profiles'].append((check['name'], case['status'], case['assertions']))
     unique = sum(len(cases) for cases in grouped.values())
     lines = [
-        '# Six-feature software test results — 12 November 2026', '',
-        f"Final run: [{run.name}](results/{run.name}/summary.json). Completed UTC: `{data['executed_utc']}`.", '',
+        '# Firmware software test results — ' + data['client_date'], '',
+        f"Final run: [{run.name}]({link(run / 'summary.json')}). Completed UTC: `{data['executed_utc']}`.", '',
+        f"Build: `{data.get('firmware_build_id', 'see retained source fingerprints')}`. "
+        f"CSV: {data.get('telemetry_columns', 22)} columns; `{data.get('sd_filename', 'TEC_V2.CSV')}`.", '',
         f"**{data['passed']} driver checks PASS; {data['failed']} FAIL.** "
         f"{unique} unique executable cases, {executions} case executions and {assertions:,} assertions.", '',
         '**Physical board tests: NOT RUN.** No firmware was flashed and no STM32/ESP32 hardware loop was exercised. '
-        'The 21 pending physical cases are itemized in [BOARD_ACCEPTANCE.md](BOARD_ACCEPTANCE.md).', '',
+        f"The pending physical cases are itemized in [BOARD_ACCEPTANCE.md]({link(HERE / 'BOARD_ACCEPTANCE.md')}).", '',
         '## Per-feature verdict', '',
         '| Feature | Unique cases | Executions | Assertions | PASS executions | FAIL executions |',
         '| --- | ---: | ---: | ---: | ---: | ---: |',
@@ -44,6 +51,7 @@ def write_report(run):
         'They do not simulate electrical characteristics, real flash ECC, thermal dynamics or instruction timing.',
         '- Target checks compile the changed sources strictly and link the full GNU Arm image at O0/Os. '
         'Rejecting lid profile 2 is an expected negative compile check.',
+        '- D cases check the approved diagnostic schema, patch installation and preservation of the entire PI/control block.',
         '- Exhaustive sweeps cover 4,096 ADC codes for each temperature, every single-bit corruption in a '
         '64-byte calibration record, all eight write positions with zero through seven interrupted bytes, '
         'and 20,001 battery voltages. Rollover cases cover unsigned millisecond and NVS sequence counters.',
@@ -70,8 +78,8 @@ def write_report(run):
         'warning with the STM32 RAM-function layout. Strict changed-source checks have no diagnostics. '
         'See the raw stderr files for the exact messages; successful linking does not qualify the physical image.', '',
         '## Earlier failed runs and corrections', '',
-        'Earlier runs are retained so failures are not erased by a successful rerun. The recorded failures were '
-        'tool access or harness compilation failures; no runtime feature case failed in these retained runs.', '',
+        'Earlier runs are retained so failures are not erased by a successful rerun. '
+        'Read each retained summary and stderr for the distinction between tool/compilation failures and runtime case failures.', '',
         '| Run | PASS checks | FAIL checks | Cause and correction |', '| --- | ---: | ---: | --- |',
     ]
     notes = {
@@ -81,11 +89,12 @@ def write_report(run):
                                   'isolated macros and used uintptr_t for MMIO pointer casts.',
         '20261112T150829635370Z': 'All host checks passed; additional edge and regression cases were then added before the final full run.',
     }
-    for previous in sorted((HERE / 'results').glob('*/summary.json')):
+    history = set((HERE / 'results').glob('*/summary.json')) | set(run.parent.glob('*/summary.json'))
+    for previous in sorted(history):
         earlier = json.loads(previous.read_text(encoding='utf-8'))
         name = previous.parent.name
         note = notes.get(name, 'Final full run.' if previous.parent == run else 'See retained commands, case results and stderr.')
-        lines.append(f"| [{name}](results/{name}/summary.json) | {earlier['passed']} | {earlier['failed']} | {note} |")
+        lines.append(f"| [{name}]({link(previous)}) | {earlier['passed']} | {earlier['failed']} | {note} |")
     lines += [
         '', 'Review also caught two restart races before final validation: a paused converter needed a full '
         'configuration restart, and a lid pulse during ADC publication had to survive foreground flag clearing. '
@@ -97,13 +106,14 @@ def write_report(run):
         '- Provision measured calibration coefficients; defaults are nominal. Test real interrupted flash erase/program, '
         'ECC/NMI recovery and the programmer update workflow. Mass erase deletes calibration.',
         '- Check LED order/polarity and the voltage thresholds on a current-limited battery substitute.',
-        '- Validate the new TEC_V2.CSV 22-column schema with the physical ESP32 bridge and downstream tools. '
+        f"- Validate the {data.get('sd_filename', 'TEC_V2.CSV')} {data.get('telemetry_columns', 22)}-column schema "
+        'with the physical ESP32 bridge and downstream tools. '
         'Old tracked Debug images are stale; use the current test ELF or a clean CubeIDE build.',
         '- Existing FAT32, watchdog, general CPU-fault and RTOS work from the earlier review remains outside these six changes.',
-        '', 'See [README.md](README.md) for exact behavior, pin assignments, calibration provisioning and reproduction commands. '
+        '', f"See [README.md]({link(HERE / 'README.md')}) for behavior, pin assignments, calibration provisioning and reproduction commands. "
         'The retained run summary includes production-source SHA-256 fingerprints.', '',
     ]
-    (HERE / 'TEST_RESULTS.md').write_text('\n'.join(lines), encoding='utf-8')
+    report_path.write_text('\n'.join(lines), encoding='utf-8')
     return unique, executions, assertions
 
 

@@ -1,8 +1,8 @@
-# Six-feature implementation and validation — 12 November 2026
+# Firmware behavior and validation — updated 15 November 2026
 
-Build identifier: `PHV4-SIX-FEATURES-20261112-A`.
+Current build identifier: `PHV4-PI-DIAGNOSTICS-20261115-A`. The six features were implemented on 12 November; the approved diagnostic logging extension was applied on 15 November. Cold-sink feedback and the PI settings remain unchanged.
 
-This folder contains executable tests of the actual C sources, every retained test-run result, and the physical-board acceptance checklist. See [TEST_RESULTS.md](TEST_RESULTS.md) for the final per-feature verdict and case-by-case table. A failed test run is retained even after the cause is corrected. Physical tests are recorded as **NOT RUN**, never as software passes.
+This folder contains executable tests of the actual C sources, retained test-run results, and the physical-board acceptance checklist. See the [current applied diagnostic results](../pi_investigation_2026_11_14/APPLIED_TEST_RESULTS.md) for the latest per-feature verdict and case-by-case table. [TEST_RESULTS.md](TEST_RESULTS.md) retains the original 12 November, 22-column validation. Failed runs are retained even after correction. Physical tests are **NOT RUN**, never software passes.
 
 ## Implemented behavior
 
@@ -75,9 +75,9 @@ Firmware updates must preserve the reserved pages. A programmer's mass erase sti
 
 ## Logging compatibility
 
-UART remains 115200 baud and preserves the first ten CSV column positions. Twelve fields are appended, making **22 columns**: ambient/hot/top/bottom temperatures, temperature validity mask, voltage SOC, hot-inhibited, lid-open, cooling-requested, fault, calibration status, temperature sequence.
+UART remains 115200 baud. The 12 November version had 22 fields; the approved 15 November diagnostic version has **32 columns**, preserving those first 22 positions. The appended values are filtered cold-sink feedback, accepted PI integral, requested current, requested/readback ILIM codes, verification flag, control-cycle count, startup state, and low/high saturation flags. See the [diagnostic field table](../pi_investigation_2026_11_14/DIAGNOSTIC_PROPOSAL.md) for exact order and interpretation.
 
-SD output uses a new `TEC_V2.CSV` file to avoid appending 22-field rows to the old `TEC_LOG.CSV` schema. Existing files are retained. The simple ESP32 byte-forwarding sketch needs no parsing change; any downstream fixed-ten-column parser must accept the new schema. The existing custom FAT implementation's unrelated defects from the prior review have not all been repaired by these six features.
+SD output now uses `TEC_PI.CSV` to avoid mixing diagnostic records with `TEC_V2.CSV` or `TEC_LOG.CSV`. Existing files are retained. UART still starts with a banner/build ID followed by rows; the matching CSV header is written to SD. The ESP32 byte-forwarding sketch needs no parsing change; fixed-column consumers must select the 32-column schema. This logging change adds no cold-temperature shutdown or PI tuning. The custom FAT implementation's unrelated defects remain outside this change.
 
 New latched diagnostic codes: 110 = required temperature invalid; 112 = stale temperature/supervision gap; 113 = ADC peripheral failure. Lid/hot pauses are recoverable interlocks and are reported separately; they do not clear or replace an existing latched fault.
 
@@ -87,10 +87,10 @@ Run from the repository root with Python 3:
 
 ```powershell
 & 'C:/Espressif/tools/idf-python/3.11.2/python.exe' Tests/feature_validation_2026_11_12/bootstrap_compiler.py
-& 'C:/Espressif/tools/idf-python/3.11.2/python.exe' Tests/feature_validation_2026_11_12/run_tests.py
+& 'C:/Espressif/tools/idf-python/3.11.2/python.exe' Tests/feature_validation_2026_11_12/run_tests.py --client-date 2026-11-15 --results-dir Tests/pi_investigation_2026_11_14/applied_results --report-path Tests/pi_investigation_2026_11_14/APPLIED_TEST_RESULTS.md
 ```
 
-`bootstrap_compiler.py` uses a temporary SHA-256-verified Zig 0.13.0 download, not a global install. `run_tests.py --zig PATH --arm-gcc PATH` supports alternate tool locations. Compiler caches and executable images live in ignored `.build/`; every run retains commands, stdout, stderr, case results and source fingerprints under `results/`.
+`bootstrap_compiler.py` uses a temporary SHA-256-verified Zig 0.13.0 download, not a global install. `run_tests.py --zig PATH --arm-gcc PATH` supports alternate tool locations. Compiler caches and ELF images live in this folder's ignored `.build/`. The command above retains the new results under `../pi_investigation_2026_11_14/applied_results/`, preserving the original 12 November results/report. Each run records commands, stdout, stderr, cases, build identity and source fingerprints.
 
 Host suites use the real feature/NVS C sources and include the actual application integration code with real STM32 peripheral definitions. Windows `VirtualAlloc` supplies emulated MMIO regions; a minimal Cortex intrinsic shim replaces ARM-only instructions. An ADC polling hook models completion/timeout/overrun and a UART-byte hook captures exact formatter output. These hooks expand to no-ops in production. NVS power-cut tests use an explicit flash model with 1-to-0 programming and injected interrupted double-word writes.
 

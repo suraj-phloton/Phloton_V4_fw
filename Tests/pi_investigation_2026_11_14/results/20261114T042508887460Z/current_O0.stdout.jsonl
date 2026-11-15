@@ -1,0 +1,8 @@
+{"id":"PI01","description":"Actual configuration is 3 C setpoint with cooling controller sign","status":"PASS","assertions":2}
+{"id":"PI02","description":"Fresh-state current requests reduce as filtered temperature falls","status":"PASS","assertions":18}
+{"id":"PI03","description":"Persistent 2 C feedback still requests 0.5 A and never OFF","status":"PASS","assertions":86402}
+{"id":"PI04","description":"Persistent minus 5 C feedback still requests the nonzero floor","status":"PASS","assertions":3601}
+{"id":"PI05","description":"Accumulated integral can retain multiamp commands below the setpoint","status":"PASS","assertions":2}
+{"id":"PI06","description":"Synthetic cooling history reproduces continued current at 2 C and minus 5 C","status":"PASS","assertions":1803}
+{"id":"PI07","description":"EMA lag separates raw logged temperature from PI feedback after a fast step","status":"PASS","assertions":2}
+{"id":"PI08","description":"Current mapping has no zero-current OFF code and retains all 131 limit steps","status":"PASS","assertions":133}

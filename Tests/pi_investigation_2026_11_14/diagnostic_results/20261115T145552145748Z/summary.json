@@ -1,0 +1,635 @@
+{
+  "client_date": "2026-11-15",
+  "completed_utc": "2026-11-15T14:56:12.476106+00:00",
+  "checks": [
+    {
+      "name": "diagnostic_patch_applies",
+      "command": [
+        "git",
+        "-c",
+        "safe.directory=C:/Suraj J R Folder/Other consultancy projects/Enhanced Innovations Pvt. Ltd/Phloton Gen 4/Designs/Phloton V4 FW/STM_SD_LOGGING_Changes/Phloton_V4_fw",
+        "apply",
+        "--check",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\PROPOSED_PI_DIAGNOSTICS.patch"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": []
+    },
+    {
+      "name": "compile_diagnostic_O0",
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fstack-protector-strong",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\support",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "-O0",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\test_platform.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\platform_O0.exe"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": []
+    },
+    {
+      "name": "diagnostic_O0",
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\platform_O0.exe"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "P01",
+          "description": "Real acquisition uses PC0-PC4 channel mapping and 16 samples each",
+          "status": "PASS",
+          "assertions": 11
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P02",
+          "description": "Real GPIO and sampling-time configuration covers every sensor",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P03",
+          "description": "ADC stuck conversion returns and requests direct shutdown",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P04",
+          "description": "ADC timeout also terminates with a frozen DWT clock",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P05",
+          "description": "ADC overrun and invalid channel rejected",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P06",
+          "description": "Any individual sensor failure prevents cooling and latches fault",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P07",
+          "description": "Hot cutoff pauses cooling keeps fans and retains user request",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P08",
+          "description": "Cooling restarts only after recovery with fresh qualification",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P09",
+          "description": "IRQ cuts power before foreground can process lid",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P10",
+          "description": "Close after IRQ still waits 30 ms then restarts configuration",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P11",
+          "description": "Every startup phase can be cancelled by lid without latching a fault",
+          "status": "PASS",
+          "assertions": 21
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P12",
+          "description": "Fault or user OFF prevents automatic resume",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P13",
+          "description": "IRQ stale-sample cutoff works during blocked foreground and rollover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P14",
+          "description": "TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P15",
+          "description": "Real interrupt services wake and sleep tone without advancing foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P16",
+          "description": "IRQ raises lid alarm at twenty seconds without any foreground service",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P17",
+          "description": "Buzzer request preserves a preexisting interrupt mask",
+          "status": "PASS",
+          "assertions": 1
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P18",
+          "description": "Save request rejects active cooling invalid key and invalid coefficients",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P19",
+          "description": "Calibration region read checks and ECC recovery are restricted",
+          "status": "PASS",
+          "assertions": 7
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P20",
+          "description": "Real indicator uses calibrated voltage masks and clears on OFF",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P21",
+          "description": "Stale or missing battery sample clears indicator",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "Integration telemetry",
+          "id": "P22",
+          "description": "UART diagnostic row preserves original fields and appends all ten PI states",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "Regression",
+          "id": "P23",
+          "description": "Original current-code mapping PI limits and reset remain intact",
+          "status": "PASS",
+          "assertions": 134
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P24",
+          "description": "Simultaneous hot and lid inhibit needs both to recover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P25",
+          "description": "Lid pulse during ADC publication cannot be lost by foreground flag clearing",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P26",
+          "description": "Failed flash save retains active coefficients and reports failure",
+          "status": "PASS",
+          "assertions": 2
+        }
+      ]
+    },
+    {
+      "name": "compile_diagnostic_O2",
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fstack-protector-strong",
+        "-ICore/Inc",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\feature_validation_2026_11_12\\support",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "-O2",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\test_platform.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\platform_O2.exe"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": []
+    },
+    {
+      "name": "diagnostic_O2",
+      "command": [
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\platform_O2.exe"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": [
+        {
+          "feature": "F1 temperatures",
+          "id": "P01",
+          "description": "Real acquisition uses PC0-PC4 channel mapping and 16 samples each",
+          "status": "PASS",
+          "assertions": 11
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P02",
+          "description": "Real GPIO and sampling-time configuration covers every sensor",
+          "status": "PASS",
+          "assertions": 8
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P03",
+          "description": "ADC stuck conversion returns and requests direct shutdown",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P04",
+          "description": "ADC timeout also terminates with a frozen DWT clock",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P05",
+          "description": "ADC overrun and invalid channel rejected",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F1 temperatures",
+          "id": "P06",
+          "description": "Any individual sensor failure prevents cooling and latches fault",
+          "status": "PASS",
+          "assertions": 15
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P07",
+          "description": "Hot cutoff pauses cooling keeps fans and retains user request",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P08",
+          "description": "Cooling restarts only after recovery with fresh qualification",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P09",
+          "description": "IRQ cuts power before foreground can process lid",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P10",
+          "description": "Close after IRQ still waits 30 ms then restarts configuration",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P11",
+          "description": "Every startup phase can be cancelled by lid without latching a fault",
+          "status": "PASS",
+          "assertions": 21
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P12",
+          "description": "Fault or user OFF prevents automatic resume",
+          "status": "PASS",
+          "assertions": 4
+        },
+        {
+          "feature": "F2 hot protection",
+          "id": "P13",
+          "description": "IRQ stale-sample cutoff works during blocked foreground and rollover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P14",
+          "description": "TIM1 CH3 PA10 5 kHz carrier leaves PA8 configuration alone",
+          "status": "PASS",
+          "assertions": 6
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P15",
+          "description": "Real interrupt services wake and sleep tone without advancing foreground",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P16",
+          "description": "IRQ raises lid alarm at twenty seconds without any foreground service",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F4 buzzer",
+          "id": "P17",
+          "description": "Buzzer request preserves a preexisting interrupt mask",
+          "status": "PASS",
+          "assertions": 1
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P18",
+          "description": "Save request rejects active cooling invalid key and invalid coefficients",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P19",
+          "description": "Calibration region read checks and ECC recovery are restricted",
+          "status": "PASS",
+          "assertions": 7
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P20",
+          "description": "Real indicator uses calibrated voltage masks and clears on OFF",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F6 voltage SOC LEDs",
+          "id": "P21",
+          "description": "Stale or missing battery sample clears indicator",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "feature": "Integration telemetry",
+          "id": "P22",
+          "description": "UART diagnostic row preserves original fields and appends all ten PI states",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "Regression",
+          "id": "P23",
+          "description": "Original current-code mapping PI limits and reset remain intact",
+          "status": "PASS",
+          "assertions": 134
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P24",
+          "description": "Simultaneous hot and lid inhibit needs both to recover",
+          "status": "PASS",
+          "assertions": 3
+        },
+        {
+          "feature": "F3 lid interlock",
+          "id": "P25",
+          "description": "Lid pulse during ADC publication cannot be lost by foreground flag clearing",
+          "status": "PASS",
+          "assertions": 5
+        },
+        {
+          "feature": "F5 calibration NVS",
+          "id": "P26",
+          "description": "Failed flash save retains active coefficients and reports failure",
+          "status": "PASS",
+          "assertions": 2
+        }
+      ]
+    },
+    {
+      "name": "diagnostic_arm_syntax",
+      "command": [
+        "C:\\ST\\STM32CubeIDE_1.18.1\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\\tools\\bin\\arm-none-eabi-gcc.exe",
+        "-mcpu=cortex-m4",
+        "-mthumb",
+        "-mfpu=fpv4-sp-d16",
+        "-mfloat-abi=hard",
+        "-std=gnu11",
+        "-DSTM32L451xx",
+        "-DUSE_HAL_DRIVER",
+        "-DDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IDrivers/STM32L4xx_HAL_Driver/Inc",
+        "-IDrivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "-IDrivers/CMSIS/Include",
+        "-fsyntax-only",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\main.c"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": []
+    },
+    {
+      "name": "diagnostic_arm_link_O0",
+      "command": [
+        "C:\\ST\\STM32CubeIDE_1.18.1\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\\tools\\bin\\arm-none-eabi-gcc.exe",
+        "-mcpu=cortex-m4",
+        "-mthumb",
+        "-mfpu=fpv4-sp-d16",
+        "-mfloat-abi=hard",
+        "-std=gnu11",
+        "-DSTM32L451xx",
+        "-DUSE_HAL_DRIVER",
+        "-DDEBUG",
+        "-Wall",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IDrivers/STM32L4xx_HAL_Driver/Inc",
+        "-IDrivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "-IDrivers/CMSIS/Include",
+        "-O0",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "--specs=nano.specs",
+        "--specs=nosys.specs",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs_stm32.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\stm32l4xx_hal_msp.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\stm32l4xx_it.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\syscalls.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\sysmem.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\system_stm32l4xx.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\main.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_cortex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_dma.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_dma_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_exti.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_flash.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_flash_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_flash_ramfunc.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_gpio.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_i2c.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_i2c_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_pwr.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_pwr_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_rcc.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_rcc_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Startup\\startup_stm32l451retx.s",
+        "-TC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\STM32L451RETX_FLASH.ld",
+        "-Wl,-Map=C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\O0.map",
+        "-Wl,--gc-sections",
+        "-Wl,--print-memory-usage",
+        "-static",
+        "-Wl,--start-group",
+        "-lc",
+        "-lm",
+        "-Wl,--end-group",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\phloton_pi_diagnostics_O0.elf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": []
+    },
+    {
+      "name": "diagnostic_arm_link_Os",
+      "command": [
+        "C:\\ST\\STM32CubeIDE_1.18.1\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\\tools\\bin\\arm-none-eabi-gcc.exe",
+        "-mcpu=cortex-m4",
+        "-mthumb",
+        "-mfpu=fpv4-sp-d16",
+        "-mfloat-abi=hard",
+        "-std=gnu11",
+        "-DSTM32L451xx",
+        "-DUSE_HAL_DRIVER",
+        "-DDEBUG",
+        "-Wall",
+        "-Wno-unused-function",
+        "-ICore/Inc",
+        "-IDrivers/STM32L4xx_HAL_Driver/Inc",
+        "-IDrivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "-IDrivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "-IDrivers/CMSIS/Include",
+        "-Os",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "--specs=nano.specs",
+        "--specs=nosys.specs",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_features.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\phloton_nvs_stm32.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\stm32l4xx_hal_msp.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\stm32l4xx_it.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\syscalls.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\sysmem.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Src\\system_stm32l4xx.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\main.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_cortex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_dma.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_dma_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_exti.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_flash.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_flash_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_flash_ramfunc.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_gpio.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_i2c.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_i2c_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_pwr.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_pwr_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_rcc.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Drivers\\STM32L4xx_HAL_Driver\\Src\\stm32l4xx_hal_rcc_ex.c",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Core\\Startup\\startup_stm32l451retx.s",
+        "-TC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\STM32L451RETX_FLASH.ld",
+        "-Wl,-Map=C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\Os.map",
+        "-Wl,--gc-sections",
+        "-Wl,--print-memory-usage",
+        "-static",
+        "-Wl,--start-group",
+        "-lc",
+        "-lm",
+        "-Wl,--end-group",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\diagnostic_candidate\\phloton_pi_diagnostics_Os.elf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "cases": []
+    }
+  ],
+  "source_sha256": {
+    "Core\\Src\\main.c": "e0aba0c2b6c825e5c2c13bad2397b7351d619b2b017468f91e1ccd37b8d11edc",
+    "Core\\Src\\phloton_feature_app.inc": "f744fb2e9e4a1c21031e33ffa074cd1ff470438c5d816356cada308748bb41d2"
+  },
+  "production_sources_unchanged": true,
+  "pi_block_identical": true,
+  "patch_sha256": "24c5d79cf6568f175aaebb2e55f865ca98c123267bc94a90b98e06203ca1078f",
+  "physical_tests": "NOT RUN",
+  "applied_to_production": false,
+  "passed": 8,
+  "failed": 0
+}

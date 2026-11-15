@@ -1,0 +1,2 @@
+error(link): unable to spawn C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\zig.exe: AccessDenied
+error: UnableToSpawnSelf

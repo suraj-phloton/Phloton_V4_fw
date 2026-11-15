@@ -1,0 +1,401 @@
+{
+  "client_date": "2026-11-14",
+  "executed_utc": "2026-11-14T04:24:08.613256+00:00",
+  "current_head": "37c9970d05cfeb701594dd0327c5c4dd995c11ce",
+  "baseline": "505d97f",
+  "equality": {
+    "configuration": true,
+    "functions": {
+      "PI_Controller": true,
+      "CurrentToILIMCode": true,
+      "PI_Reset": true
+    }
+  },
+  "identical_traces": false,
+  "config": {
+    "PI_KP": "(-0.21f)",
+    "PI_KI": "(-0.0003f)",
+    "PI_TS": "1.0f",
+    "MIN_CURRENT": "0.5f",
+    "MAX_CURRENT": "7.00f",
+    "CURRENT_STEP": "0.05f",
+    "ILIM_CODE_MIN": "0x0AU",
+    "ILIM_CODE_MAX": "0x8CU",
+    "TEC_TEMP_SETPOINT": "3.0f",
+    "TEMP_FILTER_ALPHA": "0.25f",
+    "CONTROL_PERIOD_MS": "1000U",
+    "COLDSINK_TEMP_CHANNEL": "2U"
+  },
+  "checks": [
+    {
+      "name": "baseline_O0",
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fstack-protector-strong",
+        "-O0",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\baseline",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\probe.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\baseline\\baseline_O0.exe"
+      ],
+      "compile_returncode": 0,
+      "cases": [
+        {
+          "id": "PI01",
+          "description": "Actual configuration is 3 C setpoint with cooling controller sign",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI02",
+          "description": "Fresh-state current requests reduce as filtered temperature falls",
+          "status": "PASS",
+          "assertions": 18
+        },
+        {
+          "id": "PI03",
+          "description": "Persistent 2 C feedback still requests 0.5 A and never OFF",
+          "status": "PASS",
+          "assertions": 86402
+        },
+        {
+          "id": "PI04",
+          "description": "Persistent minus 5 C feedback still requests the nonzero floor",
+          "status": "PASS",
+          "assertions": 3601
+        },
+        {
+          "id": "PI05",
+          "description": "Accumulated integral can retain multiamp commands below the setpoint",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI06",
+          "description": "Synthetic cooling history reproduces continued current at 2 C and minus 5 C",
+          "status": "PASS",
+          "assertions": 1803
+        },
+        {
+          "id": "PI07",
+          "description": "EMA lag separates raw logged temperature from PI feedback after a fast step",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI08",
+          "description": "Current mapping has no zero-current OFF code and retains all 131 limit steps",
+          "status": "PASS",
+          "assertions": 133
+        }
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "baseline_O2",
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fstack-protector-strong",
+        "-O2",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\baseline",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\probe.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\baseline\\baseline_O2.exe"
+      ],
+      "compile_returncode": 0,
+      "cases": [
+        {
+          "id": "PI01",
+          "description": "Actual configuration is 3 C setpoint with cooling controller sign",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI02",
+          "description": "Fresh-state current requests reduce as filtered temperature falls",
+          "status": "PASS",
+          "assertions": 18
+        },
+        {
+          "id": "PI03",
+          "description": "Persistent 2 C feedback still requests 0.5 A and never OFF",
+          "status": "PASS",
+          "assertions": 86402
+        },
+        {
+          "id": "PI04",
+          "description": "Persistent minus 5 C feedback still requests the nonzero floor",
+          "status": "PASS",
+          "assertions": 3601
+        },
+        {
+          "id": "PI05",
+          "description": "Accumulated integral can retain multiamp commands below the setpoint",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI06",
+          "description": "Synthetic cooling history reproduces continued current at 2 C and minus 5 C",
+          "status": "PASS",
+          "assertions": 1803
+        },
+        {
+          "id": "PI07",
+          "description": "EMA lag separates raw logged temperature from PI feedback after a fast step",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI08",
+          "description": "Current mapping has no zero-current OFF code and retains all 131 limit steps",
+          "status": "PASS",
+          "assertions": 133
+        }
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "current_O0",
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fstack-protector-strong",
+        "-O0",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\current",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\probe.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\current\\current_O0.exe"
+      ],
+      "compile_returncode": 0,
+      "cases": [
+        {
+          "id": "PI01",
+          "description": "Actual configuration is 3 C setpoint with cooling controller sign",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI02",
+          "description": "Fresh-state current requests reduce as filtered temperature falls",
+          "status": "PASS",
+          "assertions": 18
+        },
+        {
+          "id": "PI03",
+          "description": "Persistent 2 C feedback still requests 0.5 A and never OFF",
+          "status": "PASS",
+          "assertions": 86402
+        },
+        {
+          "id": "PI04",
+          "description": "Persistent minus 5 C feedback still requests the nonzero floor",
+          "status": "PASS",
+          "assertions": 3601
+        },
+        {
+          "id": "PI05",
+          "description": "Accumulated integral can retain multiamp commands below the setpoint",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI06",
+          "description": "Synthetic cooling history reproduces continued current at 2 C and minus 5 C",
+          "status": "PASS",
+          "assertions": 1803
+        },
+        {
+          "id": "PI07",
+          "description": "EMA lag separates raw logged temperature from PI feedback after a fast step",
+          "status": "PASS",
+          "assertions": 2
+        },
+        {
+          "id": "PI08",
+          "description": "Current mapping has no zero-current OFF code and retains all 131 limit steps",
+          "status": "PASS",
+          "assertions": 133
+        }
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "current_O2",
+      "command": [
+        "C:\\Users\\suraj\\AppData\\Local\\Temp\\phloton_host_tools\\zig-windows-x86_64-0.13.0\\zig.exe",
+        "cc",
+        "-target",
+        "x86_64-windows-gnu",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fstack-protector-strong",
+        "-O2",
+        "-IC:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\current",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\probe.c",
+        "-o",
+        "C:\\Suraj J R Folder\\Other consultancy projects\\Enhanced Innovations Pvt. Ltd\\Phloton Gen 4\\Designs\\Phloton V4 FW\\STM_SD_LOGGING_Changes\\Phloton_V4_fw\\Tests\\pi_investigation_2026_11_14\\.build\\current\\current_O2.exe"
+      ],
+      "compile_returncode": 1,
+      "cases": []
+    }
+  ],
+  "physical_board_tests": "NOT RUN",
+  "source_sha256": {
+    "Core\\Src\\main.c": "e0aba0c2b6c825e5c2c13bad2397b7351d619b2b017468f91e1ccd37b8d11edc",
+    "Tests\\pi_investigation_2026_11_14\\probe.c": "978145da38a6abee80d2dc5e3e2c83bfa4a00b3346577c0fd22853e1c29e484c",
+    "Tests\\pi_investigation_2026_11_14\\investigate.py": "9fc45db7fdf2f7a152e303b77b01d0eda7c3f41f44dcc1ce22a66f9eba968e72"
+  },
+  "schematic_netlist": {
+    "U4": {
+      "value": "LM51772RHAR",
+      "pins": [
+        {
+          "pin": "20",
+          "function": "ISNSP_20",
+          "net": "/TEC controller/ISNS+"
+        },
+        {
+          "pin": "19",
+          "function": "ISNSN_19",
+          "net": "/TEC controller/ISNS-"
+        },
+        {
+          "pin": "16",
+          "function": "ILIMCOMP_16",
+          "net": "LM5177_ILIMCOMP"
+        },
+        {
+          "pin": "9",
+          "function": "ADDR(CFG1)_9",
+          "net": "Net-(JP4-B)"
+        },
+        {
+          "pin": "14",
+          "function": "FB/SEL_INTFB_14",
+          "net": "Net-(U4-FB/SEL_INTFB)"
+        }
+      ]
+    },
+    "R55": {
+      "value": "10R",
+      "pins": [
+        {
+          "pin": "2",
+          "function": "",
+          "net": "+VTEC"
+        },
+        {
+          "pin": "1",
+          "function": "",
+          "net": "/TEC controller/ISNS+"
+        }
+      ]
+    },
+    "R58": {
+      "value": "10R",
+      "pins": [
+        {
+          "pin": "1",
+          "function": "",
+          "net": "/TEC controller/ISNS-"
+        },
+        {
+          "pin": "2",
+          "function": "",
+          "net": "Net-(R57-Pad2)"
+        }
+      ]
+    },
+    "R57": {
+      "value": "10mR",
+      "pins": [
+        {
+          "pin": "1",
+          "function": "",
+          "net": "+VTEC"
+        },
+        {
+          "pin": "2",
+          "function": "",
+          "net": "Net-(R57-Pad2)"
+        }
+      ]
+    },
+    "JP2": {
+      "value": "Jumper_2_Open",
+      "pins": [
+        {
+          "pin": "1",
+          "function": "A_1",
+          "net": "GND"
+        },
+        {
+          "pin": "2",
+          "function": "B_2",
+          "net": "LM5177_ILIMCOMP"
+        }
+      ]
+    },
+    "R31": {
+      "value": "2R",
+      "pins": [
+        {
+          "pin": "2",
+          "function": "",
+          "net": "LM5177_ILIMCOMP"
+        },
+        {
+          "pin": "1",
+          "function": "",
+          "net": "Net-(C39-Pad2)"
+        }
+      ]
+    },
+    "C38": {
+      "value": "30pF 50V",
+      "pins": [
+        {
+          "pin": "1",
+          "function": "",
+          "net": "GND"
+        },
+        {
+          "pin": "2",
+          "function": "",
+          "net": "LM5177_ILIMCOMP"
+        }
+      ]
+    }
+  }
+}

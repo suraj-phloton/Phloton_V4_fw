@@ -1,0 +1,4 @@
+{"feature": "Diagnostic contract", "id": "D01", "description": "Entire PI control block identical to the pre-diagnostic firmware", "status": "PASS", "assertions": 1}
+{"feature": "Diagnostic contract", "id": "D02", "description": "SD header has 32 unique fields with preserved prefix and exact diagnostic suffix", "status": "PASS", "assertions": 4}
+{"feature": "Diagnostic contract", "id": "D03", "description": "Approved logging patch is installed and can be reverse-checked without writes", "status": "PASS", "assertions": 1}
+{"feature": "Diagnostic contract", "id": "D04", "description": "Diagnostic file identity and build identity match the approved change", "status": "PASS", "assertions": 3}

@@ -1,0 +1,3 @@
+# Preserve the validated patch's mixed CRLF/LF context exactly.
+# Diff-context spaces and CR bytes are part of the saved patch, not source errors.
+PROPOSED_PI_DIAGNOSTICS.patch -text whitespace=-blank-at-eol,cr-at-eol

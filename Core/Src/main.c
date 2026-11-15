@@ -2878,7 +2878,7 @@ static uint8_t FAT32_FindRootEntry(
                 else if ((file_sector[off + 11] & 0x18U) == 0 &&
                          file_sector[off + 11] != 0x0F &&
                          memcmp(&file_sector[off],
-                                "TEC_V2  CSV", 11) == 0)
+                                "TEC_PI  CSV", 11) == 0)
                 {
                     *entry_sector = base + s;
                     *entry_offset = off;
@@ -3035,7 +3035,7 @@ static uint8_t SD_LogInit(void)
         if (!SD_ReadBlock(log_dir_sector, file_sector)) return 0;
         uint8_t *e = &file_sector[log_dir_offset];
         memset(e, 0, 32);
-        memcpy(e, "TEC_V2  CSV", 11);
+        memcpy(e, "TEC_PI  CSV", 11);
         e[11] = 0x20;
         wr16(&e[20], (uint16_t)(cluster >> 16));
         wr16(&e[26], (uint16_t)cluster);
@@ -3052,7 +3052,10 @@ static uint8_t SD_LogInit(void)
             "cs_fan_current_A,hs_fan_current_A,pi_provisional_integral_A,"
             "cold_side_temp_C,cold_side_valid,ambient_temp_C,hot_sink_temp_C,flask_top_temp_C,"
             "flask_bottom_temp_C,temp_valid_mask,soc_voltage_percent,hot_inhibited,lid_open,"
-            "cooling_requested,fault,calibration_status,temp_sequence\r\n";
+            "cooling_requested,fault,calibration_status,temp_sequence,"
+            "cold_feedback_filtered_C,pi_integral_A,pi_requested_current_A,"
+            "ilim_code_requested,ilim_code_readback,ilim_verified,control_cycles,"
+            "startup_state,pi_sat_low,pi_sat_high\r\n";
         if (!FAT32_LogWrite(header, (uint32_t)(sizeof(header) - 1U)))
         {
             log_ready = 0;
@@ -3160,15 +3163,23 @@ static uint8_t Log_Sample(uint32_t time_ms)
     LogValue(extra[2], temperatures.c[PH_TOP]);
     LogValue(extra[3], temperatures.c[PH_BOTTOM]);
     LogValue(extra[4], battery_sampler.valid ? battery_soc_percent : NAN);
+    char pi_diag[3][16];
+    LogValue(pi_diag[0], flask_bottom_filt_c);
+    LogValue(pi_diag[1], pi_integral);
+    LogValue(pi_diag[2], pi_requested_current_a);
     char line[512];
     int n = snprintf(line, sizeof line,
-                     "%lu,%s,%s,%s,%s,%s,%s,%s,%s,%u,%s,%s,%s,%s,%lu,%s,%u,%u,%lu,%lu,%lu,%lu\r\n",
+                     "%lu,%s,%s,%s,%s,%s,%s,%s,%s,%u,%s,%s,%s,%s,%lu,%s,%u,%u,%lu,%lu,%lu,%lu,%s,%s,%s,%u,%u,%u,%lu,%u,%u,%u\r\n",
                      (unsigned long)time_ms, v[0], v[1], v[2], v[3],
                      v[4], v[5], v[6], v[7], (unsigned)valid,
                      extra[0], extra[1], extra[2], extra[3], (unsigned long)temperatures.valid_mask,
                      extra[4], (unsigned)hot_inhibited, (unsigned)feature_lid.open,
                      (unsigned long)ledState, (unsigned long)firmware_error,
-                     (unsigned long)calibration_status, (unsigned long)temperatures.sequence);
+                     (unsigned long)calibration_status, (unsigned long)temperatures.sequence,
+                     pi_diag[0], pi_diag[1], pi_diag[2],
+                     (unsigned)ilim_code_requested, (unsigned)rb_ilim, (unsigned)ilim_readback_match,
+                     (unsigned long)control_cycles, (unsigned)startup_state,
+                     (unsigned)pi_sat_low, (unsigned)pi_sat_high);
     if (n < 0 || (size_t)n >= sizeof line) return 0U;
 
     /* Send the same CSV row to ESP and SD: no separate column mapping. */

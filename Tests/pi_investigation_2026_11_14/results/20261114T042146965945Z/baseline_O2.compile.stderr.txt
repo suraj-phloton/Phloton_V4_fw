@@ -1,0 +1,6 @@
+warning(compilation): failed to delete 'C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\pi_investigation_2026_11_14\.build\zig_global_cache\tmp\24041f28e80636b9-virtdisk-uuid.obj.d': FileNotFound
+warning(compilation): failed to delete 'C:\Suraj J R Folder\Other consultancy projects\Enhanced Innovations Pvt. Ltd\Phloton Gen 4\Designs\Phloton V4 FW\STM_SD_LOGGING_Changes\Phloton_V4_fw\Tests\pi_investigation_2026_11_14\.build\zig_global_cache\tmp\dda32e56e8c546d2-ocidl-uuid.obj.d': FileNotFound
+error: sub-compilation of mingw-w64 mingw32.lib failed
+    C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\mingw\libsrc\virtdisk-uuid.c:1:1: note: unable to spawn C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\zig.exe: AccessDenied
+    C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\lib\libc\mingw\libsrc\ocidl-uuid.c:1:1: note: unable to spawn C:\Users\suraj\AppData\Local\Temp\phloton_host_tools\zig-windows-x86_64-0.13.0\zig.exe: AccessDenied
+error: unable to build mingw-w64 CRT file mingw32_lib: SubCompilationFailed

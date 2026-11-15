@@ -23,7 +23,8 @@ No physical STM32/ESP32 rig was connected, flashed or exercised during this soft
 | HW-S01 | SOC LEDs | Apply measured battery voltages at/below/above 8.6, 9.0, 9.4, 10.2, 11.0, 11.8, 12.6 V; verify physical bar order/polarity. | NOT RUN |
 | HW-S02 | SOC LEDs | Verify 25 samples per channel, 10 ms spacing and approximately 550 ms batches under normal/slow SD load. | NOT RUN |
 | HW-S03 | SOC LEDs | Exercise noise near each threshold, disconnect/reconnect battery, invalid/stale data and OFF; compare calibrated voltage with a meter. | NOT RUN |
-| HW-I01 | Integration | Compare identical 22-column UART and new SD file rows, including all five temperatures and each interlock. Check downstream ESP parser. | NOT RUN |
+| HW-I01 | Integration | Compare identical 32-column UART and TEC_PI.CSV rows, including all five temperatures, interlocks and PI diagnostics. Check downstream ESP parser. | NOT RUN |
 | HW-I02 | Integration | Clean CubeIDE build, verify build ID, flashed image, stack headroom and temperature-control response with original PI gains. | NOT RUN |
+| HW-I03 | PI investigation | Save a complete diagnostic capture including raw/filtered cold-sink temperature, integral, requested/verified ILIM, control cycles and measured TEC voltage/current; record bench input and combined fan current separately. Start with TEC disabled and stop a powered test before unwanted cooling; diagnostic logging does not add a cold cutoff. | NOT RUN |
 
 Known residual scope: this change does not finish the prior RTOS/watchdog/complete bridge/FAT32 review. Measure the actual cutoff path and do not infer emergency latency from the UART sample rate.

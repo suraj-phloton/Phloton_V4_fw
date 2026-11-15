@@ -1,5 +1,7 @@
 # ESP32 and STM32 firmware comparison — 13 November 2026
 
+**15 November update:** approved diagnostic logging now adds PI feedback/request/ILIM states, making 32 CSV columns and using TEC_PI.CSV. Cold-sink control and PI settings are unchanged. See the [applied diagnostic validation](../Tests/pi_investigation_2026_11_14/APPLIED_TEST_RESULTS.md). The comparison below remains the historical snapshot of revision 6e450c2 and its 22-column schema.
+
 The STM32 now implements all six features authorized on 12 November: five temperatures, hot-sink cutoff/recovery, lid inhibition/resume, buzzer events, persistent battery calibration, and voltage-derived SOC LED bars. These features have specific behavior differences from the ESP32 application. Cellular/cloud, GNSS, Wi-Fi, OTA, fan-speed/feedback functions, and several application policies remain absent or partial.
 
 This is a source comparison, not a new hardware test or a request to implement every difference. In particular, voltage-only SOC is the requested current policy; omitting coulomb counting and the OCV load pause is intentional. No firmware, settings, or existing test results were changed for this comparison.

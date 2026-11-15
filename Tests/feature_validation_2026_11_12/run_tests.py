@@ -1,13 +1,14 @@
 """Run real C feature tests and full GNU Arm builds; retain every run's results."""
 from pathlib import Path
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import hashlib
 import json
 import os
 import subprocess
 import sys
 import tempfile
+import re
 from write_report import write_report
 
 HERE = Path(__file__).resolve().parent
@@ -16,11 +17,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--zig', default=str(Path(tempfile.gettempdir()) / 'phloton_host_tools/zig-windows-x86_64-0.13.0/zig.exe'))
 parser.add_argument('--arm-gcc', default='C:/ST/STM32CubeIDE_1.18.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/arm-none-eabi-gcc.exe')
 parser.add_argument('--host-only', action='store_true')
+parser.add_argument('--client-date', default=datetime.now(timezone(timedelta(hours=5, minutes=30))).date().isoformat())
+parser.add_argument('--results-dir', type=Path, default=HERE / 'results')
+parser.add_argument('--report-path', type=Path, default=HERE / 'TEST_RESULTS.md')
 args = parser.parse_args()
 build = HERE / '.build'
 build.mkdir(exist_ok=True)
-runs = HERE / 'results'
-runs.mkdir(exist_ok=True)
+runs = args.results_dir.resolve()
+runs.mkdir(parents=True, exist_ok=True)
 run = runs / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
 run.mkdir()
 checks = []
@@ -40,6 +44,9 @@ def invoke(name, cmd, cases=False, expect_success=True):
     if not passed:
         print(result.stderr[-5000:], flush=True)
     return passed
+
+invoke('diagnostic_contract_and_PI_preservation', [sys.executable,
+       ROOT / 'Tests/pi_investigation_2026_11_14/validate_contract.py'], cases=True)
 
 host_base = [args.zig, 'cc', '-target', 'x86_64-windows-gnu', '-std=c11', '-Wall', '-Wextra', '-Werror',
              '-Wno-unused-function', '-ICore/Inc', '-I' + str(HERE), '-g', '-fstack-protector-strong',
@@ -85,12 +92,15 @@ if not args.host_only:
 manifest = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in list((ROOT / 'Core/Src').glob('*')) + list((ROOT / 'Core/Inc').glob('phloton*'))
             + [ROOT / 'STM32L451RETX_FLASH.ld', ROOT / 'STM32L451RETX_RAM.ld'] if p.is_file()}
-summary = dict(client_date='2026-11-12', executed_utc=datetime.now(timezone.utc).isoformat(), checks=checks,
+build_id = re.search(r'const char firmware_build_id\[\] = "([^"]+)"',
+                    (ROOT / 'Core/Src/phloton_feature_app.inc').read_text(encoding='utf-8'))[1]
+summary = dict(client_date=args.client_date, executed_utc=datetime.now(timezone.utc).isoformat(), checks=checks,
+               firmware_build_id=build_id, telemetry_columns=32, sd_filename='TEC_PI.CSV',
                source_sha256=manifest, physical_board_tests='NOT RUN',
                passed=sum(c['status']=='PASS' for c in checks), failed=sum(c['status']=='FAIL' for c in checks))
 (run / 'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
 (runs / 'latest.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
-write_report(run)
+write_report(run, args.report_path.resolve())
 print('Results:', run, flush=True)
 print('Checks passed:', summary['passed'], 'failed:', summary['failed'], flush=True)
 sys.exit(bool(summary['failed']))

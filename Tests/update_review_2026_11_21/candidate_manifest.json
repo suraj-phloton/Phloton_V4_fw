@@ -1,0 +1,18 @@
+{
+  "Core/Src/main.c": {
+    "before": "4a288ef9d09d1f58ee09685c64dbdba749188c5b36923437398e6afb9580e914",
+    "candidate": "e67ed10ca72f08c2666580d675665e997b82ad28802aaf198cdc2f13e196fd7c"
+  },
+  "Core/Src/phloton_feature_app.inc": {
+    "before": "e200bd7d64ece4ebc9b00bc88a8cbfaef798d36b4db1e690fd237200ca480645",
+    "candidate": "187d0306c8dbfadbddb9e6d01e93e4ddfb3c923afcb7349cb3b1a6e2b8adf5c6"
+  },
+  "Core/Src/phloton_swo.c": {
+    "before": null,
+    "candidate": "97cae49980235e43938e874352bace945e8162197db1b373d18f0c8f579c353d"
+  },
+  "Core/Inc/phloton_swo.h": {
+    "before": null,
+    "candidate": "dd2ecf9a251f409fd998d64de3af23d84659ee722c4a0ebdc663e58bab4fa70f"
+  }
+}

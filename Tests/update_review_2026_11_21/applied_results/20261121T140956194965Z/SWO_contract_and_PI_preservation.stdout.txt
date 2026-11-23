@@ -1,0 +1,6 @@
+{"feature": "SWO contract", "id": "D01", "description": "Entire PI/control block matches the previous approved firmware after ignoring formatting", "status": "PASS", "assertions": 1}
+{"feature": "SWO contract", "id": "D02", "description": "The 32-field CSV header and TEC_PI.CSV filename are preserved", "status": "PASS", "assertions": 4}
+{"feature": "SWO contract", "id": "D03", "description": "All four installed production files match the explicitly approved candidate", "status": "PASS", "assertions": 4}
+{"feature": "SWO contract", "id": "D04", "description": "SWO replaces UART output and the current build identity is correct", "status": "PASS", "assertions": 5}
+{"feature": "SWO contract", "id": "D05", "description": "Existing feature/NVS/interrupt code and both calibration reservations are unchanged", "status": "PASS", "assertions": 9}
+{"feature": "SWO contract", "id": "D06", "description": "Saved migration patch matches the user-approved application record", "status": "PASS", "assertions": 2}

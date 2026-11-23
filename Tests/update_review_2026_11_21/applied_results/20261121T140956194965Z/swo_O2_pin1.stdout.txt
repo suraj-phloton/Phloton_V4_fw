@@ -1,0 +1,14 @@
+{"feature":"SWO transport","id":"S01","description":"Approved board initializes PB3 AF0, async 2 MHz and ITM port 0 without changing other GPIO bits","status":"PASS","assertions":10}
+{"feature":"SWO transport","id":"S02","description":"A missing debugger discards logging without waiting or touching UART registers","status":"PASS","assertions":6}
+{"feature":"SWO transport","id":"S03","description":"Each disabled trace gate independently drops output","status":"PASS","assertions":12}
+{"feature":"SWO transport","id":"S04","description":"Busy ITM leaves queued bytes intact and returns immediately","status":"PASS","assertions":5}
+{"feature":"SWO transport","id":"S05","description":"Service sends at most 64 bytes per main-loop pass","status":"PASS","assertions":4}
+{"feature":"SWO transport","id":"S06","description":"Queue accepts exact capacity and drops an overflowing message in full","status":"PASS","assertions":6}
+{"feature":"SWO transport","id":"S07","description":"Messages wrap without reordering over thousands of queue cycles","status":"PASS","assertions":8000}
+{"feature":"SWO transport","id":"S08","description":"Null oversized and zero-length writes cannot overrun queue storage","status":"PASS","assertions":4}
+{"feature":"SWO transport","id":"S09","description":"Detaching before service discards queued data and reconnect accepts fresh messages","status":"PASS","assertions":5}
+{"feature":"SWO transport","id":"S10","description":"Detaching during a service pass stops transmission and discards the remainder","status":"PASS","assertions":4}
+{"feature":"SWO transport","id":"S11","description":"Reinitializing discards pending data rather than replaying stale output","status":"PASS","assertions":3}
+{"feature":"SWO transport","id":"S12","description":"Incorrect core clock refuses initialization","status":"PASS","assertions":3}
+{"feature":"SWO transport","id":"S13","description":"Printf character retarget uses the same queue and reports rejected writes","status":"PASS","assertions":3}
+{"feature":"SWO transport","id":"S14","description":"Diagnostic counter overflow cannot corrupt queue or disable forward progress","status":"PASS","assertions":5}

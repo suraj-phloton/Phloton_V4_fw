@@ -18,8 +18,9 @@ parser.add_argument('--zig', default=str(Path(tempfile.gettempdir()) / 'phloton_
 parser.add_argument('--arm-gcc', default='C:/ST/STM32CubeIDE_1.18.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/arm-none-eabi-gcc.exe')
 parser.add_argument('--host-only', action='store_true')
 parser.add_argument('--client-date', default=datetime.now(timezone(timedelta(hours=5, minutes=30))).date().isoformat())
-parser.add_argument('--results-dir', type=Path, default=HERE / 'results')
-parser.add_argument('--report-path', type=Path, default=HERE / 'TEST_RESULTS.md')
+SWO_TESTS = ROOT / 'Tests/update_review_2026_11_21'
+parser.add_argument('--results-dir', type=Path, default=SWO_TESTS / 'applied_results')
+parser.add_argument('--report-path', type=Path, default=SWO_TESTS / 'APPLIED_TEST_RESULTS.md')
 args = parser.parse_args()
 build = HERE / '.build'
 build.mkdir(exist_ok=True)
@@ -34,19 +35,33 @@ tool_env['ZIG_LOCAL_CACHE_DIR'] = str(build / 'zig_local_cache')
 
 def invoke(name, cmd, cases=False, expect_success=True):
     print(name, flush=True)
-    result = subprocess.run([str(v) for v in cmd], cwd=ROOT, env=tool_env, capture_output=True, text=True, timeout=240)
+    command = [str(v) for v in cmd]
+    (run / (name + '.command.json')).write_text(json.dumps(command, indent=2), encoding='utf-8')
+    timed_out = False
+    try:
+        result = subprocess.run(command, cwd=ROOT, env=tool_env, capture_output=True, text=True, timeout=240)
+    except subprocess.TimeoutExpired as error:
+        timed_out = True
+        stdout = error.stdout or ''
+        stderr = error.stderr or ''
+        if isinstance(stdout, bytes): stdout = stdout.decode('utf-8', errors='replace')
+        if isinstance(stderr, bytes): stderr = stderr.decode('utf-8', errors='replace')
+        result = subprocess.CompletedProcess(command, 124, stdout, stderr + '\nTest command timed out after 240 seconds.\n')
     (run / (name + '.stdout.txt')).write_text(result.stdout, encoding='utf-8')
     (run / (name + '.stderr.txt')).write_text(result.stderr, encoding='utf-8')
     parsed = [json.loads(line) for line in result.stdout.splitlines() if line.startswith('{')] if cases else []
-    passed = (result.returncode == 0) if expect_success else (result.returncode != 0)
+    passed = not timed_out and ((result.returncode == 0) if expect_success else (result.returncode != 0))
+    if cases:
+        passed = passed and bool(parsed) and all(case['status'] == 'PASS' for case in parsed)
     checks.append(dict(name=name, status='PASS' if passed else 'FAIL', returncode=result.returncode,
-                       expected_success=expect_success, cases=parsed, command=[str(v) for v in cmd]))
+                       expected_success=expect_success, timed_out=timed_out, cases=parsed, command=command))
+    (run / 'checks_partial.json').write_text(json.dumps(checks, indent=2), encoding='utf-8')
     if not passed:
         print(result.stderr[-5000:], flush=True)
     return passed
 
-invoke('diagnostic_contract_and_PI_preservation', [sys.executable,
-       ROOT / 'Tests/pi_investigation_2026_11_14/validate_contract.py'], cases=True)
+invoke('SWO_contract_and_PI_preservation', [sys.executable,
+       SWO_TESTS / 'validate_installed_swo.py'], cases=True)
 
 host_base = [args.zig, 'cc', '-target', 'x86_64-windows-gnu', '-std=c11', '-Wall', '-Wextra', '-Werror',
              '-Wno-unused-function', '-ICore/Inc', '-I' + str(HERE), '-g', '-fstack-protector-strong',
@@ -56,6 +71,13 @@ for opt in ('O0', 'O2'):
     if invoke('compile_features_' + opt, host_base + ['-' + opt, HERE / 'test_features.c',
                                                     ROOT / 'Core/Src/phloton_features.c', ROOT / 'Core/Src/phloton_nvs.c', '-o', exe]):
         invoke('features_' + opt, [exe], cases=True)
+    for approved in (1, 0):
+        name = f'swo_{opt}_pin{approved}'
+        exe = build / (name + '.exe')
+        flags = ['-' + opt, '-DPH_SWO_PIN_APPROVED=' + str(approved),
+                 '-I' + str(HERE / 'support'), '-IDrivers/CMSIS/Device/ST/STM32L4xx/Include']
+        if invoke('compile_' + name, host_base + flags + [SWO_TESTS / 'test_swo.c', '-o', exe]):
+            invoke(name, [exe], cases=True)
     platform = HERE / 'test_platform.c'
     if platform.exists():
         for lid in (0, 1):
@@ -74,9 +96,11 @@ if not args.host_only:
              '-DSTM32L451xx', '-DUSE_HAL_DRIVER', '-DDEBUG', '-Wall', '-Wextra', '-Werror',
              '-Wno-unused-function'] + ['-I' + p for p in includes]
     changed = [ROOT / ('Core/Src/' + p) for p in ('main.c', 'phloton_features.c', 'phloton_nvs.c',
-               'phloton_nvs_stm32.c', 'stm32l4xx_it.c')]
+               'phloton_nvs_stm32.c', 'stm32l4xx_it.c', 'phloton_swo.c')]
     invoke('arm_strict_syntax', [args.arm_gcc] + flags + ['-fsyntax-only'] + changed)
     invoke('invalid_lid_profile_rejected', [args.arm_gcc] + flags + ['-DPH_LID_OPEN_LEVEL=2', '-fsyntax-only', changed[0]], expect_success=False)
+    invoke('invalid_SWO_profile_rejected', [args.arm_gcc] + flags + ['-DPH_SWO_PIN_APPROVED=2', '-fsyntax-only', changed[-1]], expect_success=False)
+    invoke('unmodified_board_SWO_strict_syntax', [args.arm_gcc] + flags + ['-DPH_SWO_PIN_APPROVED=0', '-fsyntax-only', changed[-1]])
     sources = list((ROOT / 'Core/Src').glob('*.c')) + list((ROOT / 'Drivers/STM32L4xx_HAL_Driver/Src').glob('*.c'))
     sources.append(ROOT / 'Core/Startup/startup_stm32l451retx.s')
     for opt in ('O0', 'Os'):
@@ -96,7 +120,11 @@ build_id = re.search(r'const char firmware_build_id\[\] = "([^"]+)"',
                     (ROOT / 'Core/Src/phloton_feature_app.inc').read_text(encoding='utf-8'))[1]
 summary = dict(client_date=args.client_date, executed_utc=datetime.now(timezone.utc).isoformat(), checks=checks,
                firmware_build_id=build_id, telemetry_columns=32, sd_filename='TEC_PI.CSV',
+               console_transport='ITM port 0 / SWO', core_clock_hz=80000000, swo_clock_hz=2000000,
                source_sha256=manifest, physical_board_tests='NOT RUN',
+               test_source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in [HERE / 'run_tests.py', HERE / 'test_platform.c', HERE / 'support/core_cm4.h',
+                              SWO_TESTS / 'test_swo.c', SWO_TESTS / 'validate_installed_swo.py']},
                passed=sum(c['status']=='PASS' for c in checks), failed=sum(c['status']=='FAIL' for c in checks))
 (run / 'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
 (runs / 'latest.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')

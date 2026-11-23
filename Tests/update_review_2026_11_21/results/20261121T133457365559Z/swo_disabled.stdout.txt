@@ -1,0 +1,1 @@
+{"feature":"SWO transport","id":"S15","description":"Unmodified-board build leaves PB3 and trace configuration untouched","status":"PASS","assertions":4}

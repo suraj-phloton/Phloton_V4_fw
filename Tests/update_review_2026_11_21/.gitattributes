@@ -1,0 +1,2 @@
+# Preserve the approved patch bytes and its diff context through Git checkout.
+SWO_MIGRATION.patch -text whitespace=-blank-at-eol,cr-at-eol

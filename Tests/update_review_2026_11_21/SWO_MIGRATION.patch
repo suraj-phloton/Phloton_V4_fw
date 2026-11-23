@@ -1,0 +1,270 @@
+--- a/Core/Src/main.c
++++ b/Core/Src/main.c
+@@ -4,6 +4,7 @@
+ #include <math.h>
+ #include "phloton_features.h"
+ #include "phloton_nvs.h"
++#include "phloton_swo.h"
+ 
+ /* V4 PCB: Q21 open-collector detector, R126 pull-up. Override only after a board measurement. */
+ #ifndef PH_LID_OPEN_LEVEL
+@@ -32,9 +33,6 @@
+ #ifndef PH_ADC_POLL_HOOK
+ #define PH_ADC_POLL_HOOK(reg, mask, expected) ((void)0)
+ #endif
+-#ifndef PH_UART_BYTE_HOOK
+-#define PH_UART_BYTE_HOOK(byte) ((void)0)
+-#endif
+ 
+ extern uint32_t SystemCoreClock;
+ 
+@@ -3102,57 +3100,6 @@
+     }
+ 
+     return 1;
+-}
+-
+-#define ESP_UART_BAUD 115200U
+-#define ESP_UART_PCLK_HZ 80000000U
+-#define ESP_UART_ENABLE 1U /* 0 = no printing to the ESP32 */
+-
+-volatile uint32_t esp_uart_lines_sent = 0U;
+-volatile uint32_t esp_uart_tx_timeouts = 0U;
+-
+-static void ESP_UART_Init(void)
+-{
+-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
+-    RCC->APB1ENR1 |= RCC_APB1ENR1_USART2EN;
+-    (void)RCC->APB1ENR1;
+-
+-    /* PA2 = AF7 (USART2_TX), push-pull, high speed. Other PA pins untouched. */
+-    GPIOA->MODER = (GPIOA->MODER & ~(3U << (2U * 2U))) | (2U << (2U * 2U));
+-    GPIOA->OTYPER &= ~(1U << 2U);
+-    GPIOA->OSPEEDR |= (3U << (2U * 2U));
+-    GPIOA->PUPDR &= ~(3U << (2U * 2U));
+-    GPIOA->AFR[0] = (GPIOA->AFR[0] & ~(0xFU << (2U * 4U))) | (7U << (2U * 4U));
+-
+-    USART2->CR1 = 0U;
+-    USART2->BRR = (ESP_UART_PCLK_HZ + (ESP_UART_BAUD / 2U)) / ESP_UART_BAUD; /* 694 -> 115274 baud */
+-    USART2->CR1 = USART_CR1_TE | USART_CR1_UE;
+-}
+-
+-static void ESP_UART_Write(const char *buf, uint32_t len)
+-{
+-#if ESP_UART_ENABLE
+-    for (uint32_t i = 0U; i < len; i++)
+-    {
+-        uint32_t timeout = 400000U;
+-
+-        while (!(USART2->ISR & USART_ISR_TXE) && --timeout)
+-        {
+-        }
+-
+-        if (timeout == 0U)
+-        {
+-            esp_uart_tx_timeouts++;
+-            return;
+-        }
+-
+-        USART2->TDR = (uint8_t)buf[i];
+-        PH_UART_BYTE_HOOK((uint8_t)buf[i]);
+-    }
+-#else
+-    (void)buf;
+-    (void)len;
+-#endif
+ }
+ 
+ static int32_t LogMilli(float value)
+@@ -3221,8 +3168,8 @@
+     if (n < 0 || (size_t)n >= sizeof line)
+         return 0U;
+ 
+-    /* Send the same CSV row to ESP and SD: no separate column mapping. */
+-    ESP_UART_Write(line, (uint32_t)n);
++    /* Queue the same CSV row for SWO and SD: no separate column mapping. */
++    (void)ph_swo_write(line, (uint32_t)n);
+ 
+     if (log_ready && !log_failed)
+     {
+@@ -3263,13 +3210,13 @@
+     }
+     Features_BuzzerInit();
+ 
+-    ESP_UART_Init(); /* PA2 -> ESP32 GPIO16 */
++    ph_swo_init(); /* PB3 / ITM port 0; guarded by PH_SWO_PIN_APPROVED. */
+     {
+         static const char hdr[] = "\r\nTEC logger started. Vtec/Itec = TEC voltage/current, Vbat/Ibat = battery, Ifan_cs = cold side fan current, Ifan_hs = hot side fan current, PIint = PI integral term, Tcold = cold sink temperature\r\n";
+-        ESP_UART_Write(hdr, (uint32_t)(sizeof(hdr) - 1U));
+-        ESP_UART_Write("Build: ", 7U);
+-        ESP_UART_Write(firmware_build_id, (uint32_t)(sizeof(firmware_build_id) - 1U));
+-        ESP_UART_Write("\r\n", 2U);
++        (void)ph_swo_write(hdr, (uint32_t)(sizeof(hdr) - 1U));
++        (void)ph_swo_write("Build: ", 7U);
++        (void)ph_swo_write(firmware_build_id, (uint32_t)(sizeof(firmware_build_id) - 1U));
++        (void)ph_swo_write("\r\n", 2U);
+     }
+ 
+     /* SD init uses TIM2 at 1 MHz; the PLL makes APB1/TIM2 80 MHz. */
+@@ -3320,6 +3267,7 @@
+         while (1)
+         {
+             uint32_t now;
++            ph_swo_service();
+             GPIO_Inputs_Read();
+             Features_Service();
+             Button_LED_Task();
+--- a/Core/Src/phloton_feature_app.inc
++++ b/Core/Src/phloton_feature_app.inc
+@@ -1,5 +1,5 @@
+ /* Application integration: included once by main.c after the register drivers. */
+-const char firmware_build_id[] = "PHV4-PI-DIAGNOSTICS-20261115-A";
++const char firmware_build_id[] = "PHV4-SWO-DIAGNOSTICS-20261121-A";
+ 
+ static void Features_Beep(uint8_t kind)
+ {
+--- /dev/null
++++ b/Core/Src/phloton_swo.c
+@@ -0,0 +1,112 @@
++#include "phloton_swo.h"
++#include "stm32l451xx.h"
++#include <stddef.h>
++
++#ifndef PH_SWO_READY
++#define PH_SWO_READY() (ITM->PORT[0].u32 != 0U)
++#endif
++#ifndef PH_SWO_BYTE_HOOK
++#define PH_SWO_BYTE_HOOK(byte) ((void)0)
++#endif
++
++extern uint32_t SystemCoreClock;
++volatile uint32_t ph_swo_initialized, ph_swo_bytes_sent;
++volatile uint32_t ph_swo_bytes_dropped, ph_swo_writes_dropped;
++volatile uint32_t ph_swo_queue_high_water;
++static uint8_t queue[PH_SWO_QUEUE_BYTES];
++static uint32_t queue_head, queue_count;
++
++static uint8_t trace_active(void)
++{
++    return (uint8_t)(ph_swo_initialized &&
++        (CoreDebug->DHCSR & CoreDebug_DHCSR_C_DEBUGEN_Msk) &&
++        (CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) &&
++        (ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & 1U));
++}
++
++static void discard_queue(void)
++{
++    ph_swo_bytes_dropped += queue_count;
++    queue_head = queue_count = 0U;
++}
++
++void ph_swo_init(void)
++{
++    discard_queue();
++    ph_swo_initialized = 0U;
++#if PH_SWO_PIN_APPROVED
++    if (SystemCoreClock != 80000000U)
++        return;
++    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
++    (void)RCC->AHB2ENR;
++    GPIOB->MODER = (GPIOB->MODER & ~(3U << 6U)) | (2U << 6U);
++    GPIOB->OTYPER &= ~(1U << 3U);
++    GPIOB->OSPEEDR |= 3U << 6U;
++    GPIOB->PUPDR &= ~(3U << 6U);
++    GPIOB->AFR[0] &= ~(15U << 12U); /* PB3 AF0 = TRACESWO. */
++    DBGMCU->CR = (DBGMCU->CR & ~DBGMCU_CR_TRACE_MODE) | DBGMCU_CR_TRACE_IOEN;
++    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
++    TPI->ACPR = (80000000U / PH_SWO_HZ) - 1U;
++    TPI->SPPR = 2U; /* Asynchronous NRZ. */
++    TPI->FFCR = 0x100U;
++    ITM->LAR = 0xC5ACCE55U;
++    ITM->TCR = (1U << ITM_TCR_TraceBusID_Pos) | ITM_TCR_SWOENA_Msk |
++               ITM_TCR_SYNCENA_Msk | ITM_TCR_ITMENA_Msk;
++    ITM->TER |= 1U;
++    ph_swo_initialized = 1U;
++#endif
++}
++
++uint8_t ph_swo_write(const char *data, uint32_t length)
++{
++    if (length == 0U)
++        return 1U;
++    if (!trace_active())
++        discard_queue();
++    if (data == NULL || length > PH_SWO_QUEUE_BYTES || !trace_active() ||
++        length > PH_SWO_QUEUE_BYTES - queue_count)
++    {
++        ph_swo_bytes_dropped += length;
++        ph_swo_writes_dropped++;
++        return 0U;
++    }
++    /* Reserve the complete message before copying; overflow drops no prefix. */
++    for (uint32_t i = 0U; i < length; ++i)
++        queue[(queue_head + queue_count + i) % PH_SWO_QUEUE_BYTES] = (uint8_t)data[i];
++    queue_count += length;
++    if (queue_count > ph_swo_queue_high_water)
++        ph_swo_queue_high_water = queue_count;
++    return 1U;
++}
++
++void ph_swo_service(void)
++{
++    if (!trace_active())
++    {
++        discard_queue();
++        return;
++    }
++    /* No readiness wait, timeouts, interrupt masking, or transport retries. */
++    for (uint32_t sent = 0U; sent < PH_SWO_SERVICE_BYTES && queue_count; ++sent)
++    {
++        if (!trace_active())
++        {
++            discard_queue();
++            return;
++        }
++        if (!PH_SWO_READY())
++            return;
++        uint8_t byte = queue[queue_head];
++        ITM->PORT[0].u8 = byte;
++        PH_SWO_BYTE_HOOK(byte);
++        queue_head = (queue_head + 1U) % PH_SWO_QUEUE_BYTES;
++        queue_count--;
++        ph_swo_bytes_sent++;
++    }
++}
++
++int __io_putchar(int character)
++{
++    const char byte = (char)character;
++    return ph_swo_write(&byte, 1U) ? (unsigned char)byte : -1;
++}
+--- /dev/null
++++ b/Core/Inc/phloton_swo.h
+@@ -0,0 +1,27 @@
++#ifndef PHLOTON_SWO_H
++#define PHLOTON_SWO_H
++#include <stdint.h>
++
++/* User confirmed 21-Nov-2026: R113 and C124 removed, PB3 wired to ST-LINK V2
++ * SWO. Keep 0 on an unmodified board where PB3 is connected to HSFAN_ISNS. */
++#ifndef PH_SWO_PIN_APPROVED
++#define PH_SWO_PIN_APPROVED 1
++#endif
++#if PH_SWO_PIN_APPROVED != 0 && PH_SWO_PIN_APPROVED != 1
++#error "PH_SWO_PIN_APPROVED must be 0 or 1"
++#endif
++#define PH_SWO_HZ 2000000U
++#define PH_SWO_QUEUE_BYTES 1024U
++#define PH_SWO_SERVICE_BYTES 64U
++
++extern volatile uint32_t ph_swo_initialized, ph_swo_bytes_sent;
++extern volatile uint32_t ph_swo_bytes_dropped, ph_swo_writes_dropped;
++extern volatile uint32_t ph_swo_queue_high_water;
++
++/* Foreground only: no ISR, fault-handler, or concurrent producers. */
++void ph_swo_init(void);
++uint8_t ph_swo_write(const char *data, uint32_t length);
++void ph_swo_service(void);
++/* Retarget the existing newlib _write -> __io_putchar path to ITM port 0. */
++int __io_putchar(int character);
++#endif

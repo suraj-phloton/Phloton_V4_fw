@@ -4,6 +4,7 @@
 #include <math.h>
 #include "phloton_features.h"
 #include "phloton_nvs.h"
+#include "phloton_swo.h"
 
 /* V4 PCB: Q21 open-collector detector, R126 pull-up. Override only after a board measurement. */
 #ifndef PH_LID_OPEN_LEVEL
@@ -32,49 +33,44 @@ static void Features_Beep(uint8_t kind);
 #ifndef PH_ADC_POLL_HOOK
 #define PH_ADC_POLL_HOOK(reg, mask, expected) ((void)0)
 #endif
-#ifndef PH_UART_BYTE_HOOK
-#define PH_UART_BYTE_HOOK(byte) ((void)0)
-#endif
 
 extern uint32_t SystemCoreClock;
 
-#define LM51772_ADDR             0x6AU
+#define LM51772_ADDR 0x6AU
 
-#define TARGET_VOUT_V            13.0f
-#define REG_ILIM_THRESHOLD       0x0AU
-#define REG_CLEAR_FAULTS         0x03U
+#define TARGET_VOUT_V 13.0f
+#define REG_ILIM_THRESHOLD 0x0AU
+#define REG_CLEAR_FAULTS 0x03U
 
-#define REG_VOUT_LSB             0x0CU
-#define REG_VOUT_MSB             0x0DU
-#define REG_STATUS_BYTE          0x78U
-#define REG_USB_PD_CONTROL       0x81U
-#define REG_MFR_D0               0xD0U
-#define REG_MFR_D1               0xD1U
-#define REG_MFR_D2               0xD2U
-#define REG_MFR_D3               0xD3U
-#define REG_MFR_D4               0xD4U
-#define REG_MFR_D9               0xD9U
+#define REG_VOUT_LSB 0x0CU
+#define REG_VOUT_MSB 0x0DU
+#define REG_STATUS_BYTE 0x78U
+#define REG_USB_PD_CONTROL 0x81U
+#define REG_MFR_D0 0xD0U
+#define REG_MFR_D1 0xD1U
+#define REG_MFR_D2 0xD2U
+#define REG_MFR_D3 0xD3U
+#define REG_MFR_D4 0xD4U
+#define REG_MFR_D9 0xD9U
 
-#define ADC_MAX_COUNT          4095.0f
-#define ADC_VREF                 3.3f
+#define ADC_MAX_COUNT 4095.0f
+#define ADC_VREF 3.3f
 
-#define BATT_DIVIDER_RATIO  11.0f
-#define TEC_DIVIDER_RATIO   11.0f
+#define BATT_DIVIDER_RATIO 11.0f
+#define TEC_DIVIDER_RATIO 11.0f
 
-#define BATT_VSNS_CHANNEL   5U
-#define BATT_ISNS_CHANNEL   6U
-#define TEC_ISNS_CHANNEL   15U
-#define TEC_VSNS_CHANNEL   16U
-
+#define BATT_VSNS_CHANNEL 5U
+#define BATT_ISNS_CHANNEL 6U
+#define TEC_ISNS_CHANNEL 15U
+#define TEC_VSNS_CHANNEL 16U
 
 /* ACS71240 sensitivity */
-#define BATT_CURRENT_ZERO_V  1.65f
+#define BATT_CURRENT_ZERO_V 1.65f
 #define BATT_CURRENT_SENS_VA 0.132f
 
-
 /* TEC current sense*/
-#define TEC_SHUNT_OHMS       0.005f
-#define TEC_AMP_GAIN         50.0f
+#define TEC_SHUNT_OHMS 0.005f
+#define TEC_AMP_GAIN 50.0f
 
 /* ---------------- FAN CURRENT SENSE ----------------
  * Fill these in from the schematic, then set FAN_ISNS_ENABLE to 1.
@@ -83,7 +79,7 @@ extern uint32_t SystemCoreClock;
  *   *_ISNS_ZERO_V            : output at 0 A (0 V for INA181)
  *   *_ISNS_V_PER_A           : 50 mOhm x 100 (INA181A3) = 5.0 V/A per schematic
  */
-#define FAN_ISNS_ENABLE       0U   /* Until real pins and calibration are confirmed. */
+#define FAN_ISNS_ENABLE 0U /* Until real pins and calibration are confirmed. */
 #if FAN_ISNS_ENABLE
 #error "Existing fan placeholders conflict with the five temperature inputs; use verified reworked pins."
 #endif
@@ -91,42 +87,40 @@ extern uint32_t SystemCoreClock;
 #error "PH_LID_OPEN_LEVEL must be 0 or 1"
 #endif
 
-
-
 /* Cold-side fan sense - FILL FROM SCHEMATIC */
-#define CSFAN_ISNS_PORT       GPIOC
-#define CSFAN_ISNS_PIN        0U
-#define CSFAN_ISNS_CHANNEL    1U
-#define CSFAN_ISNS_ZERO_V     0.0f
-#define CSFAN_ISNS_V_PER_A    1.0f
+#define CSFAN_ISNS_PORT GPIOC
+#define CSFAN_ISNS_PIN 0U
+#define CSFAN_ISNS_CHANNEL 1U
+#define CSFAN_ISNS_ZERO_V 0.0f
+#define CSFAN_ISNS_V_PER_A 1.0f
 
 /* Hot-side fan sense - FILL FROM SCHEMATIC */
-#define HSFAN_ISNS_PORT       GPIOC
-#define HSFAN_ISNS_PIN        2U
-#define HSFAN_ISNS_CHANNEL    3U
-#define HSFAN_ISNS_ZERO_V     0.0f
-#define HSFAN_ISNS_V_PER_A    1.0f
+#define HSFAN_ISNS_PORT GPIOC
+#define HSFAN_ISNS_PIN 2U
+#define HSFAN_ISNS_CHANNEL 3U
+#define HSFAN_ISNS_ZERO_V 0.0f
+#define HSFAN_ISNS_V_PER_A 1.0f
 
-/* ---------------- GPIO PINS (from LED code) ---------------- */      /* NEW block */
+/* ---------------- GPIO PINS (from LED code) ---------------- */ /* NEW block */
 
-#define LID_OPEN_PIN          7U    /* PC7 */
-#define CHARGER_LOCK_PIN      8U    /* PC8 */
-#define WAKEUP_SW_PIN         9U    /* PA9 */
+#define LID_OPEN_PIN 7U     /* PC7 */
+#define CHARGER_LOCK_PIN 8U /* PC8 */
+#define WAKEUP_SW_PIN 9U    /* PA9 */
 
 /* 74HC595 shift register */
-#define SR_SER_PIN            14U   /* PB14 */
-#define SR_SRCLK_PIN          15U   /* PB15 */
-#define SR_RCLK_PIN            6U   /* PC6 */
+#define SR_SER_PIN 14U   /* PB14 */
+#define SR_SRCLK_PIN 15U /* PB15 */
+#define SR_RCLK_PIN 6U   /* PC6 */
 
 /* WS2812B */
-#define WS2812B_PIN            8U   /* PA8 */
-#define WS2812B_MASK           (1UL << WS2812B_PIN)
+#define WS2812B_PIN 8U /* PA8 */
+#define WS2812B_MASK (1UL << WS2812B_PIN)
 
-#define NEO_BRIGHTNESS        64U   /* 0..255, 255 = full bright */
-#define WS2812B_MIN_CPU_MHZ   48U
+#define NEO_BRIGHTNESS 64U /* 0..255, 255 = full bright */
+#define WS2812B_MIN_CPU_MHZ 48U
 
-#define LED_GREEN_TEMP_C      8.0f  /* NEW: red above this, green at or below */
-#define BUTTON_DEBOUNCE_MS    30U   /* NEW */
+#define LED_GREEN_TEMP_C 8.0f  /* NEW: red above this, green at or below */
+#define BUTTON_DEBOUNCE_MS 30U /* NEW */
 
 volatile uint32_t tec_hot_low_readback = 0U;
 
@@ -163,7 +157,6 @@ volatile uint8_t rb_status_input = 0;
 volatile uint16_t rb_status_word = 0;
 volatile uint16_t rb_vout_code = 0;
 volatile float rb_vout_voltage_v = 0.0f;
-
 
 /* Battery ADC readbacks */
 volatile uint16_t batt_vsns_adc_raw;
@@ -208,7 +201,6 @@ volatile float battery_current_a = 0.0f;
 volatile float tec_voltage_v = 0.0f;
 volatile float tec_current_a = 0.0f;
 
-
 volatile uint16_t tec_vsns_adc_raw = 0;
 volatile float tec_vsns_adc_voltage = 0.0f;
 volatile float tec_voltage = 0.0f;
@@ -223,13 +215,13 @@ volatile uint32_t gpioa_input_snapshot = 0U;
 volatile uint32_t gpioc_input_snapshot = 0U;
 
 volatile uint32_t led_is_on = 0U;
-volatile uint8_t  led_pattern = 0U;
+volatile uint8_t led_pattern = 0U;
 
 volatile uint32_t ws2812b_is_on = 0U;
 volatile uint32_t ws2812b_blink_count = 0U;
-volatile uint32_t ws2812b_clock_too_slow = 0U;  /* 1 = CPU clock too low, LED not driven */
+volatile uint32_t ws2812b_clock_too_slow = 0U; /* 1 = CPU clock too low, LED not driven */
 
-volatile uint32_t ledState = 0U;                /* CHANGED meaning: 1 = system ON, 0 = system OFF */
+volatile uint32_t ledState = 0U; /* CHANGED meaning: 1 = system ON, 0 = system OFF */
 
 /* neoColorIndex now holds the colour currently shown: 0 = Red, 1 = Green */
 volatile uint8_t neoColorIndex = 0U;
@@ -237,8 +229,8 @@ volatile uint8_t neoColorIndex = 0U;
 volatile uint32_t button_previous_state = 1U;
 volatile uint32_t button_current_state = 1U;
 
-volatile uint32_t button_raw_last = 1U;         /* NEW: debounce */
-volatile uint32_t button_raw_change_ms = 0U;    /* NEW: debounce */
+volatile uint32_t button_raw_last = 1U;      /* NEW: debounce */
+volatile uint32_t button_raw_change_ms = 0U; /* NEW: debounce */
 
 /* ---- BUTTON DIAGNOSTICS (watch these in Live Expressions) ----
  * wakeup_sw_pin_state    raw PA9 level right now: 1 = released, 0 = pressed
@@ -249,20 +241,20 @@ volatile uint32_t button_raw_change_ms = 0U;    /* NEW: debounce */
  * btn_last_press_ms      ms_ticks value of the last accepted press
  * ms_ticks               must keep counting up (~1000 per second), the debounce needs it     */
 volatile uint32_t btn_raw_transitions = 0U;
-volatile uint32_t btn_press_count     = 0U;
-volatile uint32_t btn_release_count   = 0U;
-volatile uint32_t btn_last_press_ms   = 0U;
-volatile uint8_t  btn_pin_low_seen    = 0U;
+volatile uint32_t btn_press_count = 0U;
+volatile uint32_t btn_release_count = 0U;
+volatile uint32_t btn_last_press_ms = 0U;
+volatile uint8_t btn_pin_low_seen = 0U;
 
 /* RGB colours in RGB order */
 static const uint8_t colors[6][3] =
-{
-    {255U,   0U,   0U},  /* Red   (index 0 - used) */
-    {  0U, 255U,   0U},  /* Green (index 1 - used) */
-    {  0U,   0U, 255U},  /* Blue */
-    {255U, 255U,   0U},  /* Yellow */
-    {  0U, 255U, 255U},  /* Cyan */
-    {255U,   0U, 255U}   /* Magenta */
+    {
+        {255U, 0U, 0U},   /* Red   (index 0 - used) */
+        {0U, 255U, 0U},   /* Green (index 1 - used) */
+        {0U, 0U, 255U},   /* Blue */
+        {255U, 255U, 0U}, /* Yellow */
+        {0U, 255U, 255U}, /* Cyan */
+        {255U, 0U, 255U}  /* Magenta */
 };
 
 ///////////////////////////////////////////////////
@@ -321,7 +313,7 @@ static void SystemClock_Config(void)
     FLASH->ACR &= ~FLASH_ACR_LATENCY;
 }
 
-static void Clock_Init(void)                                  /* NEW (from LED code, unchanged) */
+static void Clock_Init(void) /* NEW (from LED code, unchanged) */
 {
     if ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI)
     {
@@ -342,7 +334,7 @@ static void Clock_Init(void)                                  /* NEW (from LED c
     }
 
     RCC->PLLCFGR = RCC_PLLCFGR_PLLSRC_MSI |
-                   (0U  << RCC_PLLCFGR_PLLM_Pos) |
+                   (0U << RCC_PLLCFGR_PLLM_Pos) |
                    (40U << RCC_PLLCFGR_PLLN_Pos) |
                    RCC_PLLCFGR_PLLREN;
 
@@ -370,8 +362,7 @@ void DWT_Init(void)
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 }
 
-static inline __attribute__((always_inline))
-void DWT_WaitUntil(uint32_t start, uint32_t cycles)
+static inline __attribute__((always_inline)) void DWT_WaitUntil(uint32_t start, uint32_t cycles)
 {
     while ((uint32_t)(DWT->CYCCNT - start) < cycles)
     {
@@ -386,25 +377,24 @@ static void DWT_WaitCycles(uint32_t cycles)
 /* ---------------- TIMING (non-blocking) ---------------- */
 /*  the blocking delay_ms() is removed.  Every wait is now done by comparing the
  * SysTick 1 ms counter (ms_ticks) against a stored start time, so the main loop never stalls. */
-volatile uint32_t ms_ticks = 0U;                          /* MOVED up from the PI section */
+volatile uint32_t ms_ticks = 0U; /* MOVED up from the PI section */
 
 /* NEW: start-up sequence states, advanced one step per main-loop pass by Startup_Task() */
-#define STARTUP_IDLE         0U   /* system OFF                                   */
-#define STARTUP_RESET_WAIT   1U   /* NRST released, waiting 20 ms, then probe     */
-#define STARTUP_CLEAR_WAIT   2U   /* faults cleared, waiting 20 ms, then configure */
-#define STARTUP_CFG_WAIT     3U   /* registers written, waiting 50 ms, then CONV_EN */
-#define STARTUP_EN_WAIT      4U   /* CONV_EN written, waiting 10 ms               */
-#define STARTUP_DONE         5U   /* sequence finished OK (handled by Startup_Task) */
-#define STARTUP_FAIL         6U   /* sequence failed (handled by Startup_Task)    */
-#define STARTUP_RUN          7U   /* converter running, PI loop active            */
+#define STARTUP_IDLE 0U       /* system OFF                                   */
+#define STARTUP_RESET_WAIT 1U /* NRST released, waiting 20 ms, then probe     */
+#define STARTUP_CLEAR_WAIT 2U /* faults cleared, waiting 20 ms, then configure */
+#define STARTUP_CFG_WAIT 3U   /* registers written, waiting 50 ms, then CONV_EN */
+#define STARTUP_EN_WAIT 4U    /* CONV_EN written, waiting 10 ms               */
+#define STARTUP_DONE 5U       /* sequence finished OK (handled by Startup_Task) */
+#define STARTUP_FAIL 6U       /* sequence failed (handled by Startup_Task)    */
+#define STARTUP_RUN 7U        /* converter running, PI loop active            */
 
 volatile uint8_t startup_state = STARTUP_IDLE;
-static uint32_t  startup_t0 = 0U;
+static uint32_t startup_t0 = 0U;
 
 /* ms_ticks when the current wait began */
 
-
-#define TEC_HOT_LOW_OFF_HIGH   0U
+#define TEC_HOT_LOW_OFF_HIGH 0U
 /* ---------------- GPIO ---------------- */
 
 static void LM51772_GPIO_Init(void)
@@ -421,24 +411,24 @@ static void LM51772_GPIO_Init(void)
 
     /* PB13 = output: LM51772_RST */
     GPIOB->MODER &= ~(3U << (13U * 2U));
-    GPIOB->MODER |=  (1U << (13U * 2U));
+    GPIOB->MODER |= (1U << (13U * 2U));
     GPIOB->OTYPER &= ~(1U << 13U);
 
     /* PB11 = output: DTRK */
     GPIOB->MODER &= ~(3U << (11U * 2U));
-    GPIOB->MODER |=  (1U << (11U * 2U));
+    GPIOB->MODER |= (1U << (11U * 2U));
     GPIOB->OTYPER &= ~(1U << 11U);
 
     /* PB10 = output: MODE HIGH */
     GPIOB->BSRR = (1U << 10U);
     GPIOB->MODER &= ~(3U << (10U * 2U));
-    GPIOB->MODER |=  (1U << (10U * 2U));
+    GPIOB->MODER |= (1U << (10U * 2U));
     GPIOB->OTYPER &= ~(1U << 10U);
 
     /* PB7 = input with pull-up: nFAULT */
     GPIOB->MODER &= ~(3U << (7U * 2U));
     GPIOB->PUPDR &= ~(3U << (7U * 2U));
-    GPIOB->PUPDR |=  (1U << (7U * 2U));
+    GPIOB->PUPDR |= (1U << (7U * 2U));
 }
 
 /* ---------------- I2C1 INITIALIZATION ---------------- */
@@ -453,19 +443,19 @@ static void I2C1_Init(void)
     GPIOB->MODER &= ~((3U << (8U * 2U)) |
                       (3U << (9U * 2U)));
 
-    GPIOB->MODER |=  ((2U << (8U * 2U)) |
-                      (2U << (9U * 2U)));
+    GPIOB->MODER |= ((2U << (8U * 2U)) |
+                     (2U << (9U * 2U)));
 
     GPIOB->AFR[1] &= ~((0xFU << 0U) | (0xFU << 4U));
-    GPIOB->AFR[1] |=  ((4U << 0U) | (4U << 4U));
+    GPIOB->AFR[1] |= ((4U << 0U) | (4U << 4U));
 
     GPIOB->OTYPER |= (1U << 8U) | (1U << 9U);
 
     GPIOB->PUPDR &= ~((3U << (8U * 2U)) |
                       (3U << (9U * 2U)));
 
-    GPIOB->PUPDR |=  ((1U << (8U * 2U)) |
-                      (1U << (9U * 2U)));
+    GPIOB->PUPDR |= ((1U << (8U * 2U)) |
+                     (1U << (9U * 2U)));
 
     GPIOB->OSPEEDR |= ((3U << (8U * 2U)) |
                        (3U << (9U * 2U)));
@@ -481,10 +471,14 @@ static void I2C1_ClearErrors(void)
 {
     uint32_t icr = 0;
 
-    if (I2C1->ISR & I2C_ISR_NACKF) icr |= I2C_ICR_NACKCF;
-    if (I2C1->ISR & I2C_ISR_STOPF) icr |= I2C_ICR_STOPCF;
-    if (I2C1->ISR & I2C_ISR_BERR)  icr |= I2C_ICR_BERRCF;
-    if (I2C1->ISR & I2C_ISR_ARLO)  icr |= I2C_ICR_ARLOCF;
+    if (I2C1->ISR & I2C_ISR_NACKF)
+        icr |= I2C_ICR_NACKCF;
+    if (I2C1->ISR & I2C_ISR_STOPF)
+        icr |= I2C_ICR_STOPCF;
+    if (I2C1->ISR & I2C_ISR_BERR)
+        icr |= I2C_ICR_BERRCF;
+    if (I2C1->ISR & I2C_ISR_ARLO)
+        icr |= I2C_ICR_ARLOCF;
 
     I2C1->ICR = icr;
 }
@@ -503,7 +497,8 @@ static uint8_t I2C1_WriteReg(uint8_t addr,
     {
     }
 
-    if (timeout == 0U) return 0U;
+    if (timeout == 0U)
+        return 0U;
 
     I2C1->CR2 = ((uint32_t)addr << 1U) |
                 (2U << I2C_CR2_NBYTES_Pos) |
@@ -543,12 +538,12 @@ static uint8_t I2C1_WriteReg(uint8_t addr,
     {
     }
 
-    uint32_t status = I2C1->ISR;          /* Capture before clearing flags. */
-        uint8_t ok = (timeout > 0U) &&
-                     ((status & I2C_ISR_STOPF) != 0U) &&
-                     ((status & (I2C_ISR_NACKF | I2C_ISR_BERR | I2C_ISR_ARLO)) == 0U);
-        I2C1_ClearErrors();
-        return ok;
+    uint32_t status = I2C1->ISR; /* Capture before clearing flags. */
+    uint8_t ok = (timeout > 0U) &&
+                 ((status & I2C_ISR_STOPF) != 0U) &&
+                 ((status & (I2C_ISR_NACKF | I2C_ISR_BERR | I2C_ISR_ARLO)) == 0U);
+    I2C1_ClearErrors();
+    return ok;
 }
 
 static uint8_t I2C1_WriteCommand(uint8_t addr, uint8_t command)
@@ -559,7 +554,8 @@ static uint8_t I2C1_WriteCommand(uint8_t addr, uint8_t command)
     {
     }
 
-    if (timeout == 0U) return 0U;
+    if (timeout == 0U)
+        return 0U;
 
     I2C1->CR2 = ((uint32_t)addr << 1U) |
                 (1U << I2C_CR2_NBYTES_Pos) |
@@ -585,7 +581,7 @@ static uint8_t I2C1_WriteCommand(uint8_t addr, uint8_t command)
     {
     }
 
-    uint32_t status = I2C1->ISR;          /* Capture before clearing flags. */
+    uint32_t status = I2C1->ISR; /* Capture before clearing flags. */
     uint8_t ok = (timeout > 0U) &&
                  ((status & I2C_ISR_STOPF) != 0U) &&
                  ((status & (I2C_ISR_NACKF | I2C_ISR_BERR | I2C_ISR_ARLO)) == 0U);
@@ -603,7 +599,8 @@ static uint8_t I2C1_ReadReg(uint8_t addr,
     {
     }
 
-    if ((timeout == 0U) || (data == 0)) return 0U;
+    if ((timeout == 0U) || (data == 0))
+        return 0U;
 
     /* Write register index */
     I2C1->CR2 = ((uint32_t)addr << 1U) |
@@ -673,14 +670,17 @@ static uint8_t I2C1_ReadWord(uint8_t addr,
     uint8_t lsb = 0U;
     uint8_t msb = 0U;
 
-    if (data == 0) return 0U;
+    if (data == 0)
+        return 0U;
 
     /*
      * Read low byte and high byte using two byte reads.
      * Confirm the LM51772 register's byte order against its datasheet.
      */
-    if (!I2C1_ReadReg(addr, reg, &lsb)) return 0U;
-    if (!I2C1_ReadReg(addr, (uint8_t)(reg + 1U), &msb)) return 0U;
+    if (!I2C1_ReadReg(addr, reg, &lsb))
+        return 0U;
+    if (!I2C1_ReadReg(addr, (uint8_t)(reg + 1U), &msb))
+        return 0U;
 
     *data = ((uint16_t)msb << 8U) | lsb;
     return 1U;
@@ -694,7 +694,8 @@ static uint8_t I2C1_ProbeAddress(uint8_t addr)
     {
     }
 
-    if (timeout == 0U) return 0U;
+    if (timeout == 0U)
+        return 0U;
 
     /*
      * Probe with a one-byte read.
@@ -709,7 +710,8 @@ static uint8_t I2C1_ProbeAddress(uint8_t addr)
     timeout = 100000U;
     while (!(I2C1->ISR & (I2C_ISR_RXNE |
                           I2C_ISR_NACKF |
-                          I2C_ISR_STOPF)) && --timeout)
+                          I2C_ISR_STOPF)) &&
+           --timeout)
     {
     }
 
@@ -749,7 +751,8 @@ static void LM51772_StartupStep(void)
     switch (startup_state)
     {
     case STARTUP_RESET_WAIT:
-        if (elapsed < 20U) return;                         /* was delay_ms(20) after NRST release */
+        if (elapsed < 20U)
+            return; /* was delay_ms(20) after NRST release */
 
         /* Same probe that used to run in Button_LED_Task */
         lm51772_ack = I2C1_ProbeAddress(LM51772_ADDR);
@@ -774,13 +777,14 @@ static void LM51772_StartupStep(void)
         return;
 
     case STARTUP_CLEAR_WAIT:
-        if (elapsed < 20U) return;                         /* was delay_ms(20) after clear faults */
+        if (elapsed < 20U)
+            return; /* was delay_ms(20) after clear faults */
 
         /*
          * These are the startup register values from your uploaded code.
          * Confirm them against your intended final configuration.
          */
-        vout_code = (uint16_t)((TARGET_VOUT_V / 0.020f) + 0.5f);   /* 20 mV per code */
+        vout_code = (uint16_t)((TARGET_VOUT_V / 0.020f) + 0.5f); /* 20 mV per code */
 
         if (!I2C1_WriteReg(LM51772_ADDR, REG_MFR_D0, 0x30U) ||
             !I2C1_WriteReg(LM51772_ADDR, REG_MFR_D2, 0x00U) ||
@@ -811,7 +815,8 @@ static void LM51772_StartupStep(void)
         return;
 
     case STARTUP_CFG_WAIT:
-        if (elapsed < 50U) return;                         /* was delay_ms(50) before CONV_EN */
+        if (elapsed < 50U)
+            return; /* was delay_ms(50) before CONV_EN */
 
         /* Read current D0, then set CONV_EN bit 0. */
         if (!I2C1_ReadReg(LM51772_ADDR, REG_MFR_D0, &d0))
@@ -835,7 +840,8 @@ static void LM51772_StartupStep(void)
         return;
 
     case STARTUP_EN_WAIT:
-        if (elapsed < 10U) return;                         /* was delay_ms(10) after CONV_EN */
+        if (elapsed < 10U)
+            return; /* was delay_ms(10) after CONV_EN */
 
         startup_state = STARTUP_DONE;
         return;
@@ -852,9 +858,14 @@ static uint8_t LM51772_Readback(void)
     uint8_t ok = 1U;
 
     uint8_t value;
-#define READ_PUBLISH(reg, destination) do { \
-    if (I2C1_ReadReg(LM51772_ADDR, (reg), &value)) (destination) = value; else ok = 0U; \
-} while (0)
+#define READ_PUBLISH(reg, destination)                 \
+    do                                                 \
+    {                                                  \
+        if (I2C1_ReadReg(LM51772_ADDR, (reg), &value)) \
+            (destination) = value;                     \
+        else                                           \
+            ok = 0U;                                   \
+    } while (0)
     READ_PUBLISH(REG_MFR_D0, rb_mfr_d0);
     READ_PUBLISH(REG_MFR_D1, rb_mfr_d1);
     READ_PUBLISH(REG_MFR_D2, rb_mfr_d2);
@@ -877,13 +888,12 @@ static uint8_t LM51772_Readback(void)
     lm51772_converter_enabled = (rb_mfr_d0 & 0x01U) ? 1U : 0U;
 
     lm51772_nfault_pin = (GPIOB->IDR & (1U << 7U)) ? 1U : 0U;
-    lm51772_reset_pin  = (GPIOB->IDR & (1U << 13U)) ? 1U : 0U;
+    lm51772_reset_pin = (GPIOB->IDR & (1U << 13U)) ? 1U : 0U;
 
-    if (!ok) firmware_error = 3U;
+    if (!ok)
+        firmware_error = 3U;
     return ok;
 }
-
-
 
 float BATT_ReadVoltage(void)
 {
@@ -904,13 +914,14 @@ float BATT_ReadCurrent(void)
     batt_isns_adc_raw = (uint16_t)(sum / 32U);
     batt_isns_adc_voltage = ADC_ToVoltage(batt_isns_adc_raw);
     batt_current = adc_last_ok ? ph_battery_current(&battery_calibration, batt_isns_adc_raw) : NAN;
-        return batt_current;
-    }
+    return batt_current;
+}
 
 float TEC_ReadVoltage(void)
 {
     uint32_t sum = 0U;
-    for (uint32_t k = 0U; k < 32U; k++) sum += ADC1_Read(TEC_VSNS_CHANNEL);
+    for (uint32_t k = 0U; k < 32U; k++)
+        sum += ADC1_Read(TEC_VSNS_CHANNEL);
     tec_vsns_adc_raw = (uint16_t)(sum / 32U);
     tec_vsns_adc_voltage = ADC_ToVoltage(tec_vsns_adc_raw);
     tec_voltage = tec_vsns_adc_voltage * TEC_DIVIDER_RATIO;
@@ -993,38 +1004,43 @@ static void ADC1_Init(void)
 
     /* ADC clock prescaler: retain the existing project setting */
     ADC1_COMMON->CCR &= ~(3U << 16U);
-    ADC1_COMMON->CCR |=  (1U << 16U);
+    ADC1_COMMON->CCR |= (1U << 16U);
 
     /* Exit deep-power-down and enable ADC regulator */
     ADC1->CR &= ~(1U << 29U);
-    ADC1->CR |=  (1U << 28U);
+    ADC1->CR |= (1U << 28U);
 
     for (volatile uint32_t i = 0; i < 10000U; i++)
         __NOP();
 
     /* Calibrate ADC while disabled */
     ADC1->CR |= (1U << 31U);
-    if (!ADC1_Wait(&ADC1->CR, 1U << 31U, 0U)) return;
+    if (!ADC1_Wait(&ADC1->CR, 1U << 31U, 0U))
+        return;
 
     /* 12-bit resolution */
     ADC1->CFGR &= ~(3U << 3U);
 
     /* Channels 2, 5 and 6: SMPR1 (channel 2 = COLDSINK_TEMP, NEW) */
     ADC1->SMPR1 &= ~((7U << 6U) | (7U << 15U) | (7U << 18U));
-    ADC1->SMPR1 |=  ((7U << 6U) | (7U << 15U) | (7U << 18U));
+    ADC1->SMPR1 |= ((7U << 6U) | (7U << 15U) | (7U << 18U));
     ADC1->SMPR1 |= (7U << 3U) | (7U << 9U) | (7U << 12U);
 
     /* Channels 13, 15 and 16: SMPR2 (bits (ch-10)*3) */
     ADC1->SMPR2 &= ~((7U << 9U) | (7U << 15U) | (7U << 18U));
-    ADC1->SMPR2 |=  ((7U << 9U) | (7U << 15U) | (7U << 18U));
+    ADC1->SMPR2 |= ((7U << 9U) | (7U << 15U) | (7U << 18U));
 
 #if FAN_ISNS_ENABLE
     /* Fan current channel: longest sample time (SMPR1 = ch 0-9, SMPR2 = ch 10-18) */
-    if (CSFAN_ISNS_CHANNEL < 10U) ADC1->SMPR1 |= (7U << (CSFAN_ISNS_CHANNEL * 3U));
-    else                          ADC1->SMPR2 |= (7U << ((CSFAN_ISNS_CHANNEL - 10U) * 3U));
+    if (CSFAN_ISNS_CHANNEL < 10U)
+        ADC1->SMPR1 |= (7U << (CSFAN_ISNS_CHANNEL * 3U));
+    else
+        ADC1->SMPR2 |= (7U << ((CSFAN_ISNS_CHANNEL - 10U) * 3U));
 
-    if (HSFAN_ISNS_CHANNEL < 10U) ADC1->SMPR1 |= (7U << (HSFAN_ISNS_CHANNEL * 3U));
-    else                          ADC1->SMPR2 |= (7U << ((HSFAN_ISNS_CHANNEL - 10U) * 3U));
+    if (HSFAN_ISNS_CHANNEL < 10U)
+        ADC1->SMPR1 |= (7U << (HSFAN_ISNS_CHANNEL * 3U));
+    else
+        ADC1->SMPR2 |= (7U << ((HSFAN_ISNS_CHANNEL - 10U) * 3U));
 #endif
 
     /* Clear ADRDY, enable ADC and wait for ready */
@@ -1038,7 +1054,8 @@ static void ADC1_Init(void)
 static uint16_t ADC1_Read(uint32_t channel)
 {
     adc_last_ok = 0U;
-    if (channel > 18U || feature_adc_fault) return 0U;
+    if (channel > 18U || feature_adc_fault)
+        return 0U;
     /* Select one conversion */
     ADC1->SQR1 &= ~((0xFU << 0U) | (0x1FU << 6U));
     ADC1->SQR1 |= (channel << 6U);
@@ -1048,11 +1065,13 @@ static uint16_t ADC1_Read(uint32_t channel)
     ADC1->CR |= (1U << 2U);
     PH_ADC_POLL_HOOK(&ADC1->ISR, ADC_ISR_EOC, ADC_ISR_EOC);
 
-    if (!ADC1_Wait(&ADC1->ISR, 1U << 2U, 1U << 2U)) {
+    if (!ADC1_Wait(&ADC1->ISR, 1U << 2U, 1U << 2U))
+    {
         ADC1->CR |= ADC_CR_ADSTP;
         return 0U;
     }
-    if (ADC1->ISR & ADC_ISR_OVR) {
+    if (ADC1->ISR & ADC_ISR_OVR)
+    {
         feature_adc_fault = 1U;
         GPIOB->BSRR = 1UL << (13U + 16U);
         return 0U;
@@ -1064,9 +1083,11 @@ static uint16_t ADC1_Read(uint32_t channel)
 static int ADC1_Wait(volatile uint32_t *reg, uint32_t mask, uint32_t expected)
 {
     uint32_t start = DWT->CYCCNT, guard = 200000U;
-    while ((*reg & mask) != expected) {
+    while ((*reg & mask) != expected)
+    {
         PH_ADC_POLL_HOOK(reg, mask, expected);
-        if ((uint32_t)(DWT->CYCCNT - start) >= SystemCoreClock / 500U || --guard == 0U) {
+        if ((uint32_t)(DWT->CYCCNT - start) >= SystemCoreClock / 500U || --guard == 0U)
+        {
             adc_timeout_count++;
             feature_adc_fault = 1U;
             GPIOB->BSRR = 1UL << (13U + 16U);
@@ -1090,64 +1111,64 @@ static float ADC_ToVoltage(uint16_t adc)
  *  -> LM51772 ILIM_THRESHOLD code (reg 0x0A) written over I2C.
  * ===================================================================== */
 
-#define PI_ENABLE                 1U      /* 0 = measure temperature only, never touch ILIM */
+#define PI_ENABLE 1U /* 0 = measure temperature only, never touch ILIM */
 
-#define FLASK_BOTTOM_TEMP_CHANNEL 13U     /* PC4 -> ADC1_IN13 (no longer used by the PI) */
-#define COLDSINK_TEMP_CHANNEL      2U     /* NEW: PC1 -> ADC1_IN2, COLDSINK_TEMP = PI / LED input */
-#define THERMISTOR_SAMPLES        16U
+#define FLASK_BOTTOM_TEMP_CHANNEL 13U /* PC4 -> ADC1_IN13 (no longer used by the PI) */
+#define COLDSINK_TEMP_CHANNEL 2U      /* NEW: PC1 -> ADC1_IN2, COLDSINK_TEMP = PI / LED input */
+#define THERMISTOR_SAMPLES 16U
 
 /* NTC divider: +3V0 --10k-- node --NTC-- GND.  The ADC full scale is VDDA (~3.3 V),
  * the divider is excited from the 3.0 V reference, so the two are NOT the same number. */
-#define NTC_ADC_FS_V              3.3f    /* VDDA = ADC full-scale  (confirm with a meter) */
-#define NTC_EXCITATION_V          3.0f    /* +3V0 rail feeding R129 */
-#define NTC_R_FIXED               10000.0f
-#define NTC_R0                    10000.0f
-#define NTC_T0                    298.15f
-#define NTC_BETA                  3977.0f
-#define TEMP_VALID_MIN_C          (-40.0f)
-#define TEMP_VALID_MAX_C          125.0f
+#define NTC_ADC_FS_V 3.3f     /* VDDA = ADC full-scale  (confirm with a meter) */
+#define NTC_EXCITATION_V 3.0f /* +3V0 rail feeding R129 */
+#define NTC_R_FIXED 10000.0f
+#define NTC_R0 10000.0f
+#define NTC_T0 298.15f
+#define NTC_BETA 3977.0f
+#define TEMP_VALID_MIN_C (-40.0f)
+#define TEMP_VALID_MAX_C 125.0f
 
-#define TEC_TEMP_SETPOINT         3.0f
-#define TEMP_FILTER_ALPHA         0.25f
+#define TEC_TEMP_SETPOINT 3.0f
+#define TEMP_FILTER_ALPHA 0.25f
 
-#define PI_KP                     (-0.21f)
-#define PI_KI                     (-0.0003f)
-#define PI_TS                     1.0f
-#define MIN_CURRENT               0.5f
-#define MAX_CURRENT               7.00f
-#define CURRENT_STEP              0.05f
+#define PI_KP (-0.21f)
+#define PI_KI (-0.0003f)
+#define PI_TS 1.0f
+#define MIN_CURRENT 0.5f
+#define MAX_CURRENT 7.00f
+#define CURRENT_STEP 0.05f
 
-#define ILIM_CODE_MIN             0x0AU   /* 0.50 A (code = 0x0A + (I-0.5)/0.05) */
-#define ILIM_CODE_MAX             0x8CU   /* 7.00 A */
+#define ILIM_CODE_MIN 0x0AU /* 0.50 A (code = 0x0A + (I-0.5)/0.05) */
+#define ILIM_CODE_MAX 0x8CU /* 7.00 A */
 
-#define CONTROL_PERIOD_MS         1000U
-#define MEASURE_PERIOD_MS         100U
+#define CONTROL_PERIOD_MS 1000U
+#define MEASURE_PERIOD_MS 100U
 
 /* ---- live variables for the debugger ---- */
-volatile float    flask_bottom_raw_c      = 0.0f;
-volatile float    flask_bottom_filt_c     = 0.0f;
-volatile float    ntc_adc_avg             = 0.0f;
-volatile float    ntc_resistance_ohm      = 0.0f;
-volatile uint8_t  flask_temp_valid        = 0U;
-volatile uint32_t sensor_fault_count      = 0U;
-volatile uint8_t  filter_initialised      = 0U;
+volatile float flask_bottom_raw_c = 0.0f;
+volatile float flask_bottom_filt_c = 0.0f;
+volatile float ntc_adc_avg = 0.0f;
+volatile float ntc_resistance_ohm = 0.0f;
+volatile uint8_t flask_temp_valid = 0U;
+volatile uint32_t sensor_fault_count = 0U;
+volatile uint8_t filter_initialised = 0U;
 
-volatile float    pi_error                = 0.0f;
-volatile float    pi_integral             = 0.0f;
-volatile float    pi_provisional_integral = 0.0f;
-volatile float    pi_provisional_current  = 0.0f;
-volatile float    pi_requested_current_a  = MIN_CURRENT;
-volatile uint8_t  pi_sat_high             = 0U;
-volatile uint8_t  pi_sat_low              = 0U;
+volatile float pi_error = 0.0f;
+volatile float pi_integral = 0.0f;
+volatile float pi_provisional_integral = 0.0f;
+volatile float pi_provisional_current = 0.0f;
+volatile float pi_requested_current_a = MIN_CURRENT;
+volatile uint8_t pi_sat_high = 0U;
+volatile uint8_t pi_sat_low = 0U;
 
-volatile uint8_t  ilim_code_requested     = ILIM_CODE_MIN;
-volatile uint8_t  ilim_readback_match     = 0U;
-volatile uint32_t ilim_write_count        = 0U;
-volatile uint32_t ilim_write_fail_count   = 0U;
-volatile uint32_t control_cycles          = 0U;
+volatile uint8_t ilim_code_requested = ILIM_CODE_MIN;
+volatile uint8_t ilim_readback_match = 0U;
+volatile uint32_t ilim_write_count = 0U;
+volatile uint32_t ilim_write_fail_count = 0U;
+volatile uint32_t control_cycles = 0U;
 
 /* ---- 1 ms time base ---- */
-#define SYSCLK_HZ                 80000000U  /* CHANGED: was 4000000U. PLL 80 MHz, set in Clock_Init() */
+#define SYSCLK_HZ 80000000U /* CHANGED: was 4000000U. PLL 80 MHz, set in Clock_Init() */
 /* ms_ticks is now declared in the TIMING section near the top (MOVED) */
 
 /* Pure bare metal: the 1 ms tick interrupt is defined here, no HAL involved.
@@ -1163,9 +1184,9 @@ static void SysTick_Start(void)
 {
     SysTick->CTRL = 0U;
     SysTick->LOAD = (SYSCLK_HZ / 1000U) - 1U;
-    SysTick->VAL  = 0U;
-    SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk |   /* core clock */
-                    SysTick_CTRL_TICKINT_Msk   |
+    SysTick->VAL = 0U;
+    SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | /* core clock */
+                    SysTick_CTRL_TICKINT_Msk |
                     SysTick_CTRL_ENABLE_Msk;
 }
 
@@ -1182,7 +1203,7 @@ static float NTC_ReadTemperatureC(uint32_t channel, uint8_t *valid)
     }
 
     avg = (float)sum / (float)THERMISTOR_SAMPLES;
-    v   = (avg * NTC_ADC_FS_V) / ADC_MAX_COUNT;
+    v = (avg * NTC_ADC_FS_V) / ADC_MAX_COUNT;
 
     ntc_adc_avg = avg;
 
@@ -1198,7 +1219,7 @@ static float NTC_ReadTemperatureC(uint32_t channel, uint8_t *valid)
     ntc_resistance_ohm = r;
 
     tk = 1.0f / ((1.0f / NTC_T0) + (1.0f / NTC_BETA) * logf(r / NTC_R0));
-    t  = tk - 273.15f;
+    t = tk - 273.15f;
 
     *valid = ((t >= TEMP_VALID_MIN_C) && (t <= TEMP_VALID_MAX_C)) ? 1U : 0U;
     return t;
@@ -1215,8 +1236,9 @@ static volatile uint8_t tec_fault_latched = 0U;
 
 static void TEC_StopFault(uint32_t reason)
 {
-    GPIOB->BSRR = 1UL << (13U + 16U);   /* Assert existing LM nRST LOW. */
-    if (!tec_fault_latched) firmware_error = reason;
+    GPIOB->BSRR = 1UL << (13U + 16U); /* Assert existing LM nRST LOW. */
+    if (!tec_fault_latched)
+        firmware_error = reason;
     tec_fault_latched = 1U;
     startup_state = STARTUP_IDLE;
     ledState = 0U;
@@ -1227,9 +1249,7 @@ static void TEC_StopFault(uint32_t reason)
     filter_initialised = 0U;
     flask_temp_valid = 0U;
     PI_Reset();
-
 }
-
 
 ////////////////////////////////////////////////////////
 
@@ -1239,10 +1259,10 @@ static float PI_Controller(float setpoint, float fl_bottom_temp)
     float integral = pi_integral;
 
     float provisional_integral = integral + PI_KI * error * PI_TS;
-    float provisional_current  = PI_KP * error + provisional_integral;
+    float provisional_current = PI_KP * error + provisional_integral;
 
     uint8_t saturated_high = (provisional_current >= MAX_CURRENT) && (error < 0.0f);
-    uint8_t saturated_low  = (provisional_current <= MIN_CURRENT) && (error > 0.0f);
+    uint8_t saturated_low = (provisional_current <= MIN_CURRENT) && (error > 0.0f);
 
     float tec_current;
 
@@ -1253,18 +1273,20 @@ static float PI_Controller(float setpoint, float fl_bottom_temp)
 
     tec_current = PI_KP * error + integral;
 
-    if (tec_current < MIN_CURRENT) tec_current = MIN_CURRENT;
-    if (tec_current > MAX_CURRENT) tec_current = MAX_CURRENT;
+    if (tec_current < MIN_CURRENT)
+        tec_current = MIN_CURRENT;
+    if (tec_current > MAX_CURRENT)
+        tec_current = MAX_CURRENT;
 
     /* round to nearest 0.05 A (value is >= 0.5, so truncation == floor) */
     tec_current = CURRENT_STEP * (float)(int32_t)((tec_current / CURRENT_STEP) + 0.5f);
 
-    pi_error                = error;
-    pi_integral             = integral;
+    pi_error = error;
+    pi_integral = integral;
     pi_provisional_integral = provisional_integral;
-    pi_provisional_current  = provisional_current;
-    pi_sat_high             = saturated_high;
-    pi_sat_low              = saturated_low;
+    pi_provisional_current = provisional_current;
+    pi_sat_high = saturated_high;
+    pi_sat_low = saturated_low;
 
     return tec_current;
 }
@@ -1274,12 +1296,15 @@ static uint8_t CurrentToILIMCode(float current_a)
 {
     int32_t steps;
 
-    if (current_a <= MIN_CURRENT) return ILIM_CODE_MIN;
-    if (current_a >= MAX_CURRENT) return ILIM_CODE_MAX;
+    if (current_a <= MIN_CURRENT)
+        return ILIM_CODE_MIN;
+    if (current_a >= MAX_CURRENT)
+        return ILIM_CODE_MAX;
 
     steps = (int32_t)(((current_a - MIN_CURRENT) / CURRENT_STEP) + 0.5f);
 
-    if ((ILIM_CODE_MIN + steps) > (int32_t)ILIM_CODE_MAX) return ILIM_CODE_MAX;
+    if ((ILIM_CODE_MIN + steps) > (int32_t)ILIM_CODE_MAX)
+        return ILIM_CODE_MAX;
     return (uint8_t)(ILIM_CODE_MIN + steps);
 }
 
@@ -1300,12 +1325,12 @@ static uint8_t TEC_ApplyIlimCode(uint8_t code)
         !I2C1_ReadReg(LM51772_ADDR, REG_ILIM_THRESHOLD, &actual) ||
         actual != code)
     {
-        ilim_write_fail_count++;      /* Counts write OR verification failure. */
+        ilim_write_fail_count++; /* Counts write OR verification failure. */
         return 0U;
     }
 
     rb_ilim = actual;
-    ILIM_THRESHOLD_VALUE = actual;    /* Update only after verified success. */
+    ILIM_THRESHOLD_VALUE = actual; /* Update only after verified success. */
     ilim_readback_match = 1U;
     ilim_write_count++;
     return 1U;
@@ -1319,7 +1344,7 @@ static void TEC_ControlStep(void)
 
     control_cycles++;
     flask_bottom_raw_c = raw;
-    flask_temp_valid   = valid;
+    flask_temp_valid = valid;
 
     if (!valid)
     {
@@ -1331,7 +1356,7 @@ static void TEC_ControlStep(void)
     if (!filter_initialised)
     {
         flask_bottom_filt_c = raw;
-        filter_initialised  = 1U;
+        filter_initialised = 1U;
     }
     else
     {
@@ -1350,15 +1375,14 @@ static void TEC_ControlStep(void)
 }
 /* END TEC_PI */
 
-
 volatile uint8_t fans_on = 0U;
 
 static void Fans_Set(uint8_t on)
 {
     if (on)
     {
-        GPIOB->BSRR = (1U << 4U);              /* CSFAN_PWM HIGH = fan ON */
-        GPIOD->BSRR = (1U << 2U);              /* HSFAN_PWM HIGH = fan ON */
+        GPIOB->BSRR = (1U << 4U); /* CSFAN_PWM HIGH = fan ON */
+        GPIOD->BSRR = (1U << 2U); /* HSFAN_PWM HIGH = fan ON */
     }
     else
     {
@@ -1382,15 +1406,14 @@ static void Fan_GPIO_Init(void)
 
     /* PB4 = CSFAN_PWM as GPIO output */
     GPIOB->MODER &= ~(3U << 8U);
-    GPIOB->MODER |=  (1U << 8U);
+    GPIOB->MODER |= (1U << 8U);
     GPIOB->OTYPER &= ~(1U << 4U);
 
     /* PD2 = HSFAN_PWM as GPIO output */
     GPIOD->MODER &= ~(3U << 4U);
-    GPIOD->MODER |=  (1U << 4U);
+    GPIOD->MODER |= (1U << 4U);
     GPIOD->OTYPER &= ~(1U << 2U);
 }
-
 
 static void TEC_HOT_LOW_GPIO_Init(void)
 {
@@ -1402,20 +1425,18 @@ static void TEC_HOT_LOW_GPIO_Init(void)
 
     /* Preload the OFF level BEFORE switching the pin to output */
 #if TEC_HOT_LOW_OFF_HIGH
-    GPIOC->BSRR = 1UL << 10U;           /* MCU pin HIGH */
+    GPIOC->BSRR = 1UL << 10U; /* MCU pin HIGH */
 #else
-    GPIOC->BSRR = 1UL << (10U + 16U);   /* MCU pin LOW */
+    GPIOC->BSRR = 1UL << (10U + 16U); /* MCU pin LOW */
 #endif
 
     GPIOC->MODER &= ~(3U << (10U * 2U));
-    GPIOC->MODER |=  (1U << (10U * 2U));
+    GPIOC->MODER |= (1U << (10U * 2U));
     GPIOC->OTYPER &= ~(1U << 10U);
-    GPIOC->PUPDR  &= ~(3U << (10U * 2U));
+    GPIOC->PUPDR &= ~(3U << (10U * 2U));
 }
 
-
 //   LED with BUTTON CONTROL
-
 
 void GPIO_Inputs_Init(void)
 {
@@ -1440,12 +1461,12 @@ void GPIO_Inputs_Init(void)
     GPIOB->MODER &= ~((3U << (SR_SER_PIN * 2U)) |
                       (3U << (SR_SRCLK_PIN * 2U)));
 
-    GPIOB->MODER |=  ((1U << (SR_SER_PIN * 2U)) |
-                      (1U << (SR_SRCLK_PIN * 2U)));
+    GPIOB->MODER |= ((1U << (SR_SER_PIN * 2U)) |
+                     (1U << (SR_SRCLK_PIN * 2U)));
 
     /* PC6: latch output */
     GPIOC->MODER &= ~(3U << (SR_RCLK_PIN * 2U));
-    GPIOC->MODER |=  (1U << (SR_RCLK_PIN * 2U));
+    GPIOC->MODER |= (1U << (SR_RCLK_PIN * 2U));
 
     /* Initialize shift-register signals LOW */
     GPIOB->BSRR = (1U << (SR_SER_PIN + 16U)) |
@@ -1457,12 +1478,12 @@ void GPIO_Inputs_Init(void)
     GPIOA->BSRR = WS2812B_MASK << 16U;
 
     GPIOA->MODER &= ~(3U << (WS2812B_PIN * 2U));
-    GPIOA->MODER |=  (1U << (WS2812B_PIN * 2U));
+    GPIOA->MODER |= (1U << (WS2812B_PIN * 2U));
 
     GPIOA->OTYPER &= ~WS2812B_MASK;
 
     GPIOA->OSPEEDR &= ~(3U << (WS2812B_PIN * 2U));
-    GPIOA->OSPEEDR |=  (3U << (WS2812B_PIN * 2U));
+    GPIOA->OSPEEDR |= (3U << (WS2812B_PIN * 2U));
 }
 
 //   READ INPUT PINS
@@ -1509,7 +1530,6 @@ void ShiftRegister_Write(uint8_t data)
     GPIOC->BSRR = 1U << (SR_RCLK_PIN + 16U);
 }
 
-
 void WS2812B_SetColor(uint8_t red, uint8_t green, uint8_t blue)
 {
     uint32_t cpu_mhz = SystemCoreClock / 1000000U;
@@ -1526,18 +1546,18 @@ void WS2812B_SetColor(uint8_t red, uint8_t green, uint8_t blue)
     ws2812b_clock_too_slow = 0U;
 
     /* Brightness scaling */
-    red   = (uint8_t)(((uint32_t)red   * NEO_BRIGHTNESS) / 255U);
+    red = (uint8_t)(((uint32_t)red * NEO_BRIGHTNESS) / 255U);
     green = (uint8_t)(((uint32_t)green * NEO_BRIGHTNESS) / 255U);
-    blue  = (uint8_t)(((uint32_t)blue  * NEO_BRIGHTNESS) / 255U);
+    blue = (uint8_t)(((uint32_t)blue * NEO_BRIGHTNESS) / 255U);
 
     /* WS2812B expects GRB byte order */
     uint32_t color = ((uint32_t)green << 16U) |
-                     ((uint32_t)red   << 8U)  |
+                     ((uint32_t)red << 8U) |
                      (uint32_t)blue;
 
-    uint32_t t0h        = (cpu_mhz * 30U)  / 100U;   /* 0.30 us high for a 0 bit */
-    uint32_t t1h        = (cpu_mhz * 70U)  / 100U;   /* 0.70 us high for a 1 bit */
-    uint32_t bit_cycles = (cpu_mhz * 125U) / 100U;   /* 1.25 us per bit */
+    uint32_t t0h = (cpu_mhz * 30U) / 100U;         /* 0.30 us high for a 0 bit */
+    uint32_t t1h = (cpu_mhz * 70U) / 100U;         /* 0.70 us high for a 1 bit */
+    uint32_t bit_cycles = (cpu_mhz * 125U) / 100U; /* 1.25 us per bit */
 
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
@@ -1549,10 +1569,10 @@ void WS2812B_SetColor(uint8_t red, uint8_t green, uint8_t blue)
 
         uint32_t start = DWT->CYCCNT;
 
-        GPIOA->BSRR = WS2812B_MASK;               /* rising edge */
+        GPIOA->BSRR = WS2812B_MASK; /* rising edge */
         DWT_WaitUntil(start, high_cycles);
 
-        GPIOA->BSRR = WS2812B_MASK << 16U;        /* falling edge */
+        GPIOA->BSRR = WS2812B_MASK << 16U; /* falling edge */
         DWT_WaitUntil(start, bit_cycles);
     }
 
@@ -1567,13 +1587,13 @@ void WS2812B_SetColor(uint8_t red, uint8_t green, uint8_t blue)
 
 static void LED_UpdateFromTemperature(void)
 {
-    uint8_t wanted = 0U;                          /* 0 = Red   */
+    uint8_t wanted = 0U; /* 0 = Red   */
 
     if ((filter_initialised != 0U) &&
         (flask_temp_valid != 0U) &&
         (flask_bottom_filt_c <= LED_GREEN_TEMP_C))
     {
-        wanted = 1U;                              /* 1 = Green */
+        wanted = 1U; /* 1 = Green */
     }
 
     if (wanted != neoColorIndex)
@@ -1591,15 +1611,24 @@ static void LED_UpdateFromTemperature(void)
 
 static void Startup_Task(void)
 {
-    if (!Features_Ready()) { Features_Pause(); return; }
-    if (ledState && startup_state == STARTUP_IDLE) Features_BeginStartup();
+    if (!Features_Ready())
+    {
+        Features_Pause();
+        return;
+    }
+    if (ledState && startup_state == STARTUP_IDLE)
+        Features_BeginStartup();
     if ((startup_state == STARTUP_IDLE) || (startup_state == STARTUP_RUN))
     {
         return;
     }
 
     LM51772_StartupStep();
-    if (!Features_Ready()) { Features_Pause(); return; }
+    if (!Features_Ready())
+    {
+        Features_Pause();
+        return;
+    }
 
     if (startup_state == STARTUP_FAIL)
     {
@@ -1614,11 +1643,11 @@ static void Startup_Task(void)
     }
     else if (startup_state == STARTUP_DONE)
     {
-    	if (!LM51772_Readback() || !lm51772_nfault_pin || !lm51772_converter_enabled)
-          {
-    	   TEC_StopFault(102U);
-    		return;
-    	  }
+        if (!LM51772_Readback() || !lm51772_nfault_pin || !lm51772_converter_enabled)
+        {
+            TEC_StopFault(102U);
+            return;
+        }
         lm51772_init_ok = 1U;
 
         led_pattern = ph_soc_leds(batt_voltage, battery_sampler.valid);
@@ -1633,7 +1662,7 @@ static void Startup_Task(void)
         Fans_Set(1U);
 
         firmware_stage = 6U;
-        startup_state = STARTUP_RUN;                       /* PI loop is allowed to run now */
+        startup_state = STARTUP_RUN; /* PI loop is allowed to run now */
     }
 }
 
@@ -1679,7 +1708,7 @@ void Button_LED_Task(void)
 
             /* LM51772 -> NRST LOW = converter off  */
             GPIOB->BSRR = (1U << (13U + 16U));
-            startup_state = STARTUP_IDLE;                  /*  also cancels a start-up in progress */
+            startup_state = STARTUP_IDLE; /*  also cancels a start-up in progress */
             Fans_Set(0U);
             lm51772_init_ok = 0U;
 
@@ -1696,22 +1725,21 @@ void Button_LED_Task(void)
         }
         else
         {
-         /* ---------- ON ---------- */
-        if (tec_fault_latched)
-         {
-          ledState = 0U;
-          button_previous_state = button_current_state;
-          return;
-          }
+            /* ---------- ON ---------- */
+            if (tec_fault_latched)
+            {
+                ledState = 0U;
+                button_previous_state = button_current_state;
+                return;
+            }
 
-           firmware_error = 0U;
+            firmware_error = 0U;
             Features_Beep(PH_BEEP_WAKE);
 
-
-            ILIM_THRESHOLD_VALUE   = ILIM_CODE_MIN;
-            ilim_code_requested    = ILIM_CODE_MIN;
+            ILIM_THRESHOLD_VALUE = ILIM_CODE_MIN;
+            ilim_code_requested = ILIM_CODE_MIN;
             pi_requested_current_a = MIN_CURRENT;
-            filter_initialised     = 0U;
+            filter_initialised = 0U;
             PI_Reset();
 
             lm51772_ack = 0U;
@@ -1726,23 +1754,19 @@ void Button_LED_Task(void)
     button_previous_state = button_current_state;
 }
 
-
 #include "stm32l451xx.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 
-
-#define TIM2_CLOCK_HZ       80000000U
-#define SD_CS_PIN           2U
-#define SD_BLOCK_SIZE       512U
-#define SD_TOKEN_START      0xFEU
-#define SD_TOKEN_ACCEPT     0x05U
-#define SD_SPI_TIMEOUT      200000U
-#define SD_READY_TIMEOUT    200000U
+#define TIM2_CLOCK_HZ 80000000U
+#define SD_CS_PIN 2U
+#define SD_BLOCK_SIZE 512U
+#define SD_TOKEN_START 0xFEU
+#define SD_TOKEN_ACCEPT 0x05U
+#define SD_SPI_TIMEOUT 200000U
+#define SD_READY_TIMEOUT 200000U
 #define FAT32_MAX_ROOT_CLUSTERS 4096U
-
-
 
 volatile uint32_t sd_debug_stage = 0;
 volatile uint32_t sd_debug_error = 0;
@@ -1786,8 +1810,6 @@ volatile uint32_t fat32_file_sector = 0;
 volatile uint32_t fat32_dir_sector = 0;
 volatile uint32_t fat32_dir_offset = 0;
 
-
-
 static uint8_t sd_verify[512];
 static uint8_t fat_sector[512];
 static uint8_t file_sector[512];
@@ -1829,8 +1851,6 @@ static uint8_t SD_WriteBlock(uint32_t sector,
                              const uint8_t *buffer);
 
 static uint8_t FAT32_Mount(void);
-
-
 
 static uint16_t rd16(const uint8_t *p)
 {
@@ -1942,8 +1962,8 @@ static void SD_SPI_Init(void)
     /* AF5 for SPI1 */
 
     GPIOA->AFR[0] &= ~((15U << 20) |
-                      (15U << 24) |
-                      (15U << 28));
+                       (15U << 24) |
+                       (15U << 28));
 
     GPIOA->AFR[0] |= ((5U << 20) |
                       (5U << 24) |
@@ -2245,9 +2265,9 @@ static uint8_t SD_Init(void)
         }
 
         r = SD_SendCommand(
-                41,
-                cmd8_ok ? 0x40000000U : 0U,
-                0x01);
+            41,
+            cmd8_ok ? 0x40000000U : 0U,
+            0x01);
 
         sd_acmd41_response = r;
 
@@ -2513,7 +2533,7 @@ static uint32_t FAT32_ClusterLBA(uint32_t cluster)
 }
 
 static uint8_t FAT32_ReadFAT(uint32_t cluster,
-                            uint32_t *value)
+                             uint32_t *value)
 {
     uint32_t byte_offset = cluster * 4U;
 
@@ -2531,7 +2551,7 @@ static uint8_t FAT32_ReadFAT(uint32_t cluster,
 }
 
 static uint8_t FAT32_WriteFAT(uint32_t cluster,
-                             uint32_t value)
+                              uint32_t value)
 {
     uint32_t byte_offset = cluster * 4U;
 
@@ -2552,7 +2572,7 @@ static uint8_t FAT32_WriteFAT(uint32_t cluster,
 
         wr32(&fat_sector[offset],
              (old & 0xF0000000U) |
-             (value & 0x0FFFFFFFU));
+                 (value & 0x0FFFFFFFU));
 
         if (!SD_WriteBlock(sector, fat_sector))
             return 0;
@@ -2798,7 +2818,7 @@ static uint8_t FAT32_Mount(void)
     if (fat_cluster_count_internal < 1 ||
         fat_root >= fat_cluster_count_internal + 2 ||
         (fat_sectors_per_fat * 128U) <
-        (fat_cluster_count_internal + 2U))
+            (fat_cluster_count_internal + 2U))
     {
         fat32_error = 7;
         return 0;
@@ -2918,7 +2938,6 @@ static uint8_t FAT32_FindRootEntry(
     return free_slot_found;
 }
 
-
 /* =========================================================
    CONTINUOUS CSV LOGGER (root file TEC_LOG.CSV)
    ========================================================= */
@@ -2935,7 +2954,8 @@ static uint32_t log_rows_written = 0;
 
 static uint8_t FAT32_UpdateLogSize(uint32_t size)
 {
-    if (!SD_ReadBlock(log_dir_sector, file_sector)) return 0;
+    if (!SD_ReadBlock(log_dir_sector, file_sector))
+        return 0;
     wr32(&file_sector[log_dir_offset + 28], size);
     return SD_WriteBlock(log_dir_sector, file_sector);
 }
@@ -2947,7 +2967,8 @@ static uint8_t FAT32_LogWrite(const uint8_t *src, uint32_t len)
     uint32_t done = 0;
 
     if (!log_ready || !src || cluster_bytes == 0U ||
-        len > (0xFFFFFFFFU - log_file_size)) return 0;
+        len > (0xFFFFFFFFU - log_file_size))
+        return 0;
 
     while (done < len)
     {
@@ -2959,15 +2980,19 @@ static uint8_t FAT32_LogWrite(const uint8_t *src, uint32_t len)
 
         while (index < target_index)
         {
-            if (!FAT32_ReadFAT(cluster, &next)) return 0;
+            if (!FAT32_ReadFAT(cluster, &next))
+                return 0;
             if (next >= 0x0FFFFFF8U || next == FAT32_EOC)
             {
                 uint32_t allocated;
-                if (!FAT32_AllocCluster(&allocated)) return 0;
-                if (!FAT32_WriteFAT(cluster, allocated)) return 0;
+                if (!FAT32_AllocCluster(&allocated))
+                    return 0;
+                if (!FAT32_WriteFAT(cluster, allocated))
+                    return 0;
                 next = allocated;
             }
-            if (next < 2U || next >= fat_cluster_count_internal + 2U) return 0;
+            if (next < 2U || next >= fat_cluster_count_internal + 2U)
+                return 0;
             cluster = next;
             index++;
         }
@@ -2976,13 +3001,16 @@ static uint8_t FAT32_LogWrite(const uint8_t *src, uint32_t len)
         uint32_t byte_in_sector = in_cluster % 512U;
         uint32_t chunk = 512U - byte_in_sector;
         uint32_t cluster_remaining = cluster_bytes - in_cluster;
-        if (chunk > cluster_remaining) chunk = cluster_remaining;
-        if (chunk > (len - done)) chunk = len - done;
+        if (chunk > cluster_remaining)
+            chunk = cluster_remaining;
+        if (chunk > (len - done))
+            chunk = len - done;
 
         uint32_t lba = FAT32_ClusterLBA(cluster) + sector_in_cluster;
         if (pos < log_file_size)
         {
-            if (!SD_ReadBlock(lba, file_sector)) return 0;
+            if (!SD_ReadBlock(lba, file_sector))
+                return 0;
         }
         else if (byte_in_sector == 0U)
         {
@@ -2990,18 +3018,21 @@ static uint8_t FAT32_LogWrite(const uint8_t *src, uint32_t len)
         }
         else
         {
-            if (!SD_ReadBlock(lba, file_sector)) return 0;
+            if (!SD_ReadBlock(lba, file_sector))
+                return 0;
         }
 
         memcpy(&file_sector[byte_in_sector], &src[done], chunk);
-        if (!SD_WriteBlock(lba, file_sector)) return 0;
+        if (!SD_WriteBlock(lba, file_sector))
+            return 0;
 
         pos += chunk;
         done += chunk;
     }
 
     log_file_size = pos;
-    if (!FAT32_UpdateLogSize(log_file_size)) return 0;
+    if (!FAT32_UpdateLogSize(log_file_size))
+        return 0;
     return 1;
 }
 
@@ -3015,24 +3046,28 @@ static uint8_t SD_LogInit(void)
     log_file_size = 0;
 
     if (!FAT32_FindRootEntry(&dir_sector, &dir_offset,
-                             &old_cluster, &old_size, &found)) return 0;
+                             &old_cluster, &old_size, &found))
+        return 0;
 
     log_dir_sector = dir_sector;
     log_dir_offset = dir_offset;
 
     if (found)
     {
-        if (old_cluster < 2U || old_cluster >= fat_cluster_count_internal + 2U) return 0;
+        if (old_cluster < 2U || old_cluster >= fat_cluster_count_internal + 2U)
+            return 0;
         log_first_cluster = old_cluster;
         log_file_size = old_size;
     }
     else
     {
         uint32_t cluster;
-        if (!FAT32_AllocCluster(&cluster)) return 0;
+        if (!FAT32_AllocCluster(&cluster))
+            return 0;
         log_first_cluster = cluster;
 
-        if (!SD_ReadBlock(log_dir_sector, file_sector)) return 0;
+        if (!SD_ReadBlock(log_dir_sector, file_sector))
+            return 0;
         uint8_t *e = &file_sector[log_dir_offset];
         memset(e, 0, 32);
         memcpy(e, "TEC_PI  CSV", 11);
@@ -3040,7 +3075,8 @@ static uint8_t SD_LogInit(void)
         wr16(&e[20], (uint16_t)(cluster >> 16));
         wr16(&e[26], (uint16_t)cluster);
         wr32(&e[28], 0U);
-        if (!SD_WriteBlock(log_dir_sector, file_sector)) return 0;
+        if (!SD_WriteBlock(log_dir_sector, file_sector))
+            return 0;
     }
 
     log_ready = 1;
@@ -3066,63 +3102,12 @@ static uint8_t SD_LogInit(void)
     return 1;
 }
 
-
-#define ESP_UART_BAUD     115200U
-#define ESP_UART_PCLK_HZ  80000000U
-#define ESP_UART_ENABLE   1U            /* 0 = no printing to the ESP32 */
-
-volatile uint32_t esp_uart_lines_sent = 0U;
-volatile uint32_t esp_uart_tx_timeouts = 0U;
-
-static void ESP_UART_Init(void)
-{
-    RCC->AHB2ENR  |= RCC_AHB2ENR_GPIOAEN;
-    RCC->APB1ENR1 |= RCC_APB1ENR1_USART2EN;
-    (void)RCC->APB1ENR1;
-
-    /* PA2 = AF7 (USART2_TX), push-pull, high speed. Other PA pins untouched. */
-    GPIOA->MODER   = (GPIOA->MODER & ~(3U << (2U * 2U))) | (2U << (2U * 2U));
-    GPIOA->OTYPER &= ~(1U << 2U);
-    GPIOA->OSPEEDR |= (3U << (2U * 2U));
-    GPIOA->PUPDR   &= ~(3U << (2U * 2U));
-    GPIOA->AFR[0]  = (GPIOA->AFR[0] & ~(0xFU << (2U * 4U))) | (7U << (2U * 4U));
-
-    USART2->CR1 = 0U;
-    USART2->BRR = (ESP_UART_PCLK_HZ + (ESP_UART_BAUD / 2U)) / ESP_UART_BAUD;   /* 694 -> 115274 baud */
-    USART2->CR1 = USART_CR1_TE | USART_CR1_UE;
-}
-
-static void ESP_UART_Write(const char *buf, uint32_t len)
-{
-#if ESP_UART_ENABLE
-    for (uint32_t i = 0U; i < len; i++)
-    {
-        uint32_t timeout = 400000U;
-
-        while (!(USART2->ISR & USART_ISR_TXE) && --timeout)
-        {
-        }
-
-        if (timeout == 0U)
-        {
-            esp_uart_tx_timeouts++;
-            return;
-        }
-
-        USART2->TDR = (uint8_t)buf[i];
-        PH_UART_BYTE_HOOK((uint8_t)buf[i]);
-    }
-#else
-    (void)buf; (void)len;
-#endif
-}
-
 static int32_t LogMilli(float value)
 {
-    if (value >= 0.0f) return (int32_t)(value * 1000.0f + 0.5f);
+    if (value >= 0.0f)
+        return (int32_t)(value * 1000.0f + 0.5f);
     return (int32_t)(value * 1000.0f - 0.5f);
 }
-
 
 static void LogValue(char out[16], float value)
 {
@@ -3137,7 +3122,6 @@ static void LogValue(char out[16], float value)
              (unsigned long)(u / 1000U), (unsigned long)(u % 1000U));
 }
 
-
 static uint8_t Log_Sample(uint32_t time_ms)
 {
     uint8_t valid = (uint8_t)((temperatures.valid_mask >> PH_COLD) & 1U);
@@ -3145,17 +3129,18 @@ static uint8_t Log_Sample(uint32_t time_ms)
 
     const float cols[8] = {
         tec_voltage, tec_current, batt_voltage, batt_current,
-        cs_fan_current, hs_fan_current, pi_provisional_integral, temp
-    };
+        cs_fan_current, hs_fan_current, pi_provisional_integral, temp};
 
     char v[8][16];
-    for (unsigned i = 0U; i < 8U; ++i) LogValue(v[i], cols[i]);
+    for (unsigned i = 0U; i < 8U; ++i)
+        LogValue(v[i], cols[i]);
 
 #if !FAN_ISNS_ENABLE
     strcpy(v[4], "NA");
     strcpy(v[5], "NA");
 #endif
-    if (!valid) strcpy(v[7], "NA");
+    if (!valid)
+        strcpy(v[7], "NA");
 
     char extra[5][16];
     LogValue(extra[0], temperatures.c[PH_AMBIENT]);
@@ -3180,14 +3165,16 @@ static uint8_t Log_Sample(uint32_t time_ms)
                      (unsigned)ilim_code_requested, (unsigned)rb_ilim, (unsigned)ilim_readback_match,
                      (unsigned long)control_cycles, (unsigned)startup_state,
                      (unsigned)pi_sat_low, (unsigned)pi_sat_high);
-    if (n < 0 || (size_t)n >= sizeof line) return 0U;
+    if (n < 0 || (size_t)n >= sizeof line)
+        return 0U;
 
-    /* Send the same CSV row to ESP and SD: no separate column mapping. */
-    ESP_UART_Write(line, (uint32_t)n);
+    /* Queue the same CSV row for SWO and SD: no separate column mapping. */
+    (void)ph_swo_write(line, (uint32_t)n);
 
     if (log_ready && !log_failed)
     {
-        if (!FAT32_LogWrite((const uint8_t *)line, (uint32_t)n)) return 0U;
+        if (!FAT32_LogWrite((const uint8_t *)line, (uint32_t)n))
+            return 0U;
         log_rows_written++;
     }
     return 1U;
@@ -3205,9 +3192,9 @@ int main(void)
     __ISB();
 #endif
 
-    LM51772_GPIO_Init();        /* Enables GPIOB clock, then asserts PB13 (LM51772 NRST) LOW */
-    Fan_GPIO_Init();            /* Establish fan OFF command */
-    TEC_HOT_LOW_GPIO_Init();    /* PC10 to its measured OFF level */
+    LM51772_GPIO_Init();     /* Enables GPIOB clock, then asserts PB13 (LM51772 NRST) LOW */
+    Fan_GPIO_Init();         /* Establish fan OFF command */
+    TEC_HOT_LOW_GPIO_Init(); /* PC10 to its measured OFF level */
 
     SystemClock_Config();
     Clock_Init();
@@ -3223,13 +3210,13 @@ int main(void)
     }
     Features_BuzzerInit();
 
-    ESP_UART_Init();                         /* PA2 -> ESP32 GPIO16 */
+    ph_swo_init(); /* PB3 / ITM port 0; guarded by PH_SWO_PIN_APPROVED. */
     {
         static const char hdr[] = "\r\nTEC logger started. Vtec/Itec = TEC voltage/current, Vbat/Ibat = battery, Ifan_cs = cold side fan current, Ifan_hs = hot side fan current, PIint = PI integral term, Tcold = cold sink temperature\r\n";
-        ESP_UART_Write(hdr, (uint32_t)(sizeof(hdr) - 1U));
-        ESP_UART_Write("Build: ", 7U);
-        ESP_UART_Write(firmware_build_id, (uint32_t)(sizeof(firmware_build_id) - 1U));
-        ESP_UART_Write("\r\n", 2U);
+        (void)ph_swo_write(hdr, (uint32_t)(sizeof(hdr) - 1U));
+        (void)ph_swo_write("Build: ", 7U);
+        (void)ph_swo_write(firmware_build_id, (uint32_t)(sizeof(firmware_build_id) - 1U));
+        (void)ph_swo_write("\r\n", 2U);
     }
 
     /* SD init uses TIM2 at 1 MHz; the PLL makes APB1/TIM2 80 MHz. */
@@ -3237,8 +3224,13 @@ int main(void)
     SD_SPI_Init();
     if (SD_Init() && FAT32_Mount())
     {
-        if (SD_LogInit()) sd_init_ok = 1U;
-        else { sd_init_ok = 0U; log_failed = 1U; }
+        if (SD_LogInit())
+            sd_init_ok = 1U;
+        else
+        {
+            sd_init_ok = 0U;
+            log_failed = 1U;
+        }
     }
     else
     {
@@ -3247,12 +3239,12 @@ int main(void)
     }
 
     firmware_stage = 1U;
-    //LM51772_GPIO_Init();
+    // LM51772_GPIO_Init();
     I2C1_Init();
     GPIO_Inputs_Init();
     ADC1_Init();
-    //Fan_GPIO_Init();
-    //TEC_HOT_LOW_GPIO_Init();
+    // Fan_GPIO_Init();
+    // TEC_HOT_LOW_GPIO_Init();
 
     ShiftRegister_Write(0x00U);
     WS2812B_SetColor(0U, 0U, 0U);
@@ -3275,6 +3267,7 @@ int main(void)
         while (1)
         {
             uint32_t now;
+            ph_swo_service();
             GPIO_Inputs_Read();
             Features_Service();
             Button_LED_Task();
@@ -3304,7 +3297,7 @@ int main(void)
                     if (elapsed >= 2U * CONTROL_PERIOD_MS)
                     {
                         control_missed_deadlines++;
-                        TEC_StopFault(103U);   /* Don't integrate fictitious one-second samples. */
+                        TEC_StopFault(103U); /* Don't integrate fictitious one-second samples. */
                     }
                     else
                     {
@@ -3313,12 +3306,14 @@ int main(void)
                     }
                 }
             }
-            else was_on = 0U;
+            else
+                was_on = 0U;
 
             if ((uint32_t)(now - t_log) >= SD_LOG_PERIOD_MS)
             {
                 t_log = now;
-                if (!Log_Sample(now)) log_failed = 1U;
+                if (!Log_Sample(now))
+                    log_failed = 1U;
             }
         }
     }

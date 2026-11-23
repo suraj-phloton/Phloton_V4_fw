@@ -1,0 +1,8 @@
+{
+  "client_date": "2026-11-21",
+  "status": "INCOMPLETE",
+  "description": "Host compiler timed out after 240 seconds while compiling platform_O2_lid1. Earlier completed checks passed; the old runner exited before ARM builds or a final summary. Raw completed-check logs are retained. Timeout reporting was added and validation was rerun.",
+  "failed_command_name": "compile_platform_O2_lid1",
+  "failure_kind": "subprocess.TimeoutExpired",
+  "firmware_changes_to_resolve": false
+}

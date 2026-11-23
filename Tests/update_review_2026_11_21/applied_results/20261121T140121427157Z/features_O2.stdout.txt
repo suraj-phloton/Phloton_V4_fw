@@ -1,0 +1,35 @@
+{"feature":"F1 temperatures","id":"T01","description":"All five independent channels and nominal conversion","status":"PASS","assertions":8}
+{"feature":"F1 temperatures","id":"T02","description":"Each individual channel invalidates independently","status":"PASS","assertions":10}
+{"feature":"F1 temperatures","id":"T03","description":"Exhaustive 4096-code sweep for every sensor","status":"PASS","assertions":40960}
+{"feature":"F1 temperatures","id":"T04","description":"Open short near rails and invalid output pointer","status":"PASS","assertions":19}
+{"feature":"F1 temperatures","id":"T05","description":"Freshness boundary and unsigned wraparound","status":"PASS","assertions":3}
+{"feature":"F2 hot protection","id":"H01","description":"Exact trip and recovery with retained hysteresis","status":"PASS","assertions":6}
+{"feature":"F2 hot protection","id":"H02","description":"NaN infinity invalid flag and recovery","status":"PASS","assertions":5}
+{"feature":"F2 hot protection","id":"H03","description":"Repeated noisy temperature sweep stays inhibited until recovery","status":"PASS","assertions":30000}
+{"feature":"F3 lid interlock","id":"L01","description":"Boot closed requires 30 ms qualification","status":"PASS","assertions":3}
+{"feature":"F3 lid interlock","id":"L02","description":"Open immediate closure bounce resets timer","status":"PASS","assertions":3}
+{"feature":"F3 lid interlock","id":"L03","description":"Closure qualification crosses millisecond rollover","status":"PASS","assertions":2}
+{"feature":"F4 buzzer","id":"B01","description":"Wake beep on-off-on boundaries","status":"PASS","assertions":8}
+{"feature":"F4 buzzer","id":"B02","description":"Sleep tone and preemption","status":"PASS","assertions":2}
+{"feature":"F4 buzzer","id":"B03","description":"Twenty second lid alarm and ten second repeat","status":"PASS","assertions":5}
+{"feature":"F4 buzzer","id":"B04","description":"Alarm cancellation on close and OFF resets delay","status":"PASS","assertions":4}
+{"feature":"F4 buzzer","id":"B05","description":"Buzzer and alarm wraparound","status":"PASS","assertions":4}
+{"feature":"F5 calibration NVS","id":"N01","description":"Blank storage nominal defaults without flash writes","status":"PASS","assertions":6}
+{"feature":"F5 calibration NVS","id":"N02","description":"Save reboot load newer record and previous copy retained","status":"PASS","assertions":8}
+{"feature":"F5 calibration NVS","id":"N03","description":"Every single-bit record corruption falls back to previous copy","status":"PASS","assertions":1536}
+{"feature":"F5 calibration NVS","id":"N04","description":"Power interruption at every write and partial double-word byte","status":"PASS","assertions":256}
+{"feature":"F5 calibration NVS","id":"N05","description":"Erase and read failure preserve usable calibration","status":"PASS","assertions":5}
+{"feature":"F5 calibration NVS","id":"N06","description":"Both corrupted records use defaults without writes","status":"PASS","assertions":3}
+{"feature":"F5 calibration NVS","id":"N07","description":"Invalid calibration cannot erase or program flash","status":"PASS","assertions":15}
+{"feature":"F5 calibration NVS","id":"N08","description":"Calibrated conversion fractional counts signed current and invalid raw","status":"PASS","assertions":5}
+{"feature":"F5 calibration NVS","id":"N09","description":"Persisted generation counter wraps from maximum to zero","status":"PASS","assertions":10}
+{"feature":"F5 calibration NVS","id":"N10","description":"Incomplete storage interface never erases calibration","status":"PASS","assertions":5}
+{"feature":"F5 calibration NVS","id":"N11","description":"Lost readback acknowledgment accepts only a complete committed copy","status":"PASS","assertions":7}
+{"feature":"F6 voltage SOC LEDs","id":"S01","description":"User mapping endpoints clamp and intermediate levels","status":"PASS","assertions":5}
+{"feature":"F6 voltage SOC LEDs","id":"S02","description":"Every LED threshold below exact and above","status":"PASS","assertions":17}
+{"feature":"F6 voltage SOC LEDs","id":"S03","description":"Missing invalid and nonfinite battery data never lights bars","status":"PASS","assertions":4}
+{"feature":"F6 voltage SOC LEDs","id":"S04","description":"Monotonic voltage sweep with five-bit-only output","status":"PASS","assertions":40002}
+{"feature":"F6 voltage SOC LEDs","id":"S05","description":"ESP32 sampling 25 current then 25 voltage at 10 ms and 50 ms rest","status":"PASS","assertions":105}
+{"feature":"F6 voltage SOC LEDs","id":"S06","description":"Fractional averages and no sample replay after delayed foreground","status":"PASS","assertions":5}
+{"feature":"F6 voltage SOC LEDs","id":"S07","description":"Acquisition failure resets complete batch and invalidates old average","status":"PASS","assertions":4}
+{"feature":"F6 voltage SOC LEDs","id":"S08","description":"Sampling deadline crosses unsigned rollover","status":"PASS","assertions":3}

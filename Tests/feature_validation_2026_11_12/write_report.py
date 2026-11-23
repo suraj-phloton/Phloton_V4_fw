@@ -46,12 +46,16 @@ def write_report(run, report_path=None):
         '', '## Execution profiles and scope', '',
         '- Logic cases (T/H/L/B/N/S IDs): actual production feature and NVS modules at O0 and O2.',
         '- Platform cases (P IDs): actual main/application integration and STM32 storage adapter at O0/O2, '
-        'each with lid HIGH=open and LOW=open. MMIO, ADC completion and UART output are modeled on Windows.',
-        '- Both host suites enable undefined-behavior sanitizer, stack protection and warnings-as-errors. '
+        'each with lid HIGH=open and LOW=open. MMIO, ADC completion and SWO output are modeled on Windows.',
+        '- SWO cases: actual installed transport at O0/O2 with the modified-board setting enabled and disabled; '
+        'exercise absent debugger, trace gates, backpressure, bounded service, whole-message queue overflow, '
+        'wraparound, detach/reconnect and printf character routing.',
+        '- Host suites enable undefined-behavior sanitizer, stack protection and warnings-as-errors. '
         'They do not simulate electrical characteristics, real flash ECC, thermal dynamics or instruction timing.',
         '- Target checks compile the changed sources strictly and link the full GNU Arm image at O0/Os. '
         'Rejecting lid profile 2 is an expected negative compile check.',
-        '- D cases check the approved diagnostic schema, patch installation and preservation of the entire PI/control block.',
+        '- D cases check the approved SWO installation, diagnostic schema and preservation of the entire PI/control block '
+        'and existing feature/NVS code.',
         '- Exhaustive sweeps cover 4,096 ADC codes for each temperature, every single-bit corruption in a '
         '64-byte calibration record, all eight write positions with zero through seven interrupted bytes, '
         'and 20,001 battery voltages. Rollover cases cover unsigned millisecond and NVS sequence counters.',
@@ -95,6 +99,9 @@ def write_report(run, report_path=None):
         name = previous.parent.name
         note = notes.get(name, 'Final full run.' if previous.parent == run else 'See retained commands, case results and stderr.')
         lines.append(f"| [{name}]({link(previous)}) | {earlier['passed']} | {earlier['failed']} | {note} |")
+    for partial in sorted(run.parent.glob('*/runner_failure.json')):
+        failure = json.loads(partial.read_text(encoding='utf-8'))
+        lines.append(f"| [{partial.parent.name}]({link(partial)}) | incomplete | runner timeout | {failure['description']} |")
     lines += [
         '', 'Review also caught two restart races before final validation: a paused converter needed a full '
         'configuration restart, and a lid pulse during ADC publication had to survive foreground flag clearing. '
@@ -107,7 +114,7 @@ def write_report(run, report_path=None):
         'ECC/NMI recovery and the programmer update workflow. Mass erase deletes calibration.',
         '- Check LED order/polarity and the voltage thresholds on a current-limited battery substitute.',
         f"- Validate the {data.get('sd_filename', 'TEC_V2.CSV')} {data.get('telemetry_columns', 22)}-column schema "
-        'with the physical ESP32 bridge and downstream tools. '
+        f"with the physical {data.get('console_transport', 'UART/ESP32')} capture and downstream tools. "
         'Old tracked Debug images are stale; use the current test ELF or a clean CubeIDE build.',
         '- Existing FAT32, watchdog, general CPU-fault and RTOS work from the earlier review remains outside these six changes.',
         '', f"See [README.md]({link(HERE / 'README.md')}) for behavior, pin assignments, calibration provisioning and reproduction commands. "
@@ -119,4 +126,5 @@ def write_report(run, report_path=None):
 
 if __name__ == '__main__':
     selected = Path(sys.argv[1]) if len(sys.argv) > 1 else max((HERE / 'results').glob('*/summary.json')).parent
-    print('Report written:', write_report(selected))
+    output = Path(sys.argv[2]) if len(sys.argv) > 2 else None
+    print('Report written:', write_report(selected, output))

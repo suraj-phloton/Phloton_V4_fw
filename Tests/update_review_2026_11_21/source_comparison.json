@@ -1,0 +1,154 @@
+{
+  "local_main_tokens_equal_HEAD": true,
+  "functions": {
+    "SystemClock_Config": "IDENTICAL_TOKENS",
+    "Clock_Init": "DIFFERENT",
+    "DWT_Init": "IDENTICAL_TOKENS",
+    "DWT_WaitCycles": "IDENTICAL_TOKENS",
+    "LM51772_GPIO_Init": "IDENTICAL_TOKENS",
+    "I2C1_Init": "IDENTICAL_TOKENS",
+    "I2C1_ClearErrors": "IDENTICAL_TOKENS",
+    "I2C1_WriteReg": "IDENTICAL_TOKENS",
+    "I2C1_WriteCommand": "IDENTICAL_TOKENS",
+    "I2C1_ReadReg": "IDENTICAL_TOKENS",
+    "I2C1_ReadWord": "MISSING",
+    "I2C1_ProbeAddress": "IDENTICAL_TOKENS",
+    "LM51772_StartupStep": "IDENTICAL_TOKENS",
+    "LM51772_Readback": "DIFFERENT",
+    "BATT_ReadVoltage": "DIFFERENT",
+    "BATT_ReadCurrent": "DIFFERENT",
+    "TEC_ReadVoltage": "IDENTICAL_TOKENS",
+    "TEC_ReadCurrent": "IDENTICAL_TOKENS",
+    "CSFAN_ReadCurrent": "IDENTICAL_TOKENS",
+    "HSFAN_ReadCurrent": "IDENTICAL_TOKENS",
+    "ADC1_Init": "DIFFERENT",
+    "ADC1_Read": "DIFFERENT",
+    "ADC1_Wait": "MISSING",
+    "ADC_ToVoltage": "IDENTICAL_TOKENS",
+    "SysTick_Handler": "DIFFERENT",
+    "SysTick_Start": "IDENTICAL_TOKENS",
+    "NTC_ReadTemperatureC": "IDENTICAL_TOKENS",
+    "PI_Reset": "IDENTICAL_TOKENS",
+    "TEC_StopFault": "DIFFERENT",
+    "PI_Controller": "DIFFERENT",
+    "CurrentToILIMCode": "IDENTICAL_TOKENS",
+    "TEC_ApplyIlimCode": "IDENTICAL_TOKENS",
+    "TEC_ControlStep": "DIFFERENT",
+    "Fans_Set": "IDENTICAL_TOKENS",
+    "Fan_GPIO_Init": "IDENTICAL_TOKENS",
+    "TEC_HOT_LOW_GPIO_Init": "IDENTICAL_TOKENS",
+    "GPIO_Inputs_Init": "IDENTICAL_TOKENS",
+    "GPIO_Inputs_Read": "IDENTICAL_TOKENS",
+    "ShiftRegister_Write": "IDENTICAL_TOKENS",
+    "WS2812B_SetColor": "IDENTICAL_TOKENS",
+    "LED_UpdateFromTemperature": "IDENTICAL_TOKENS",
+    "Startup_Task": "DIFFERENT",
+    "Button_LED_Task": "DIFFERENT",
+    "rd16": "IDENTICAL_TOKENS",
+    "rd32": "IDENTICAL_TOKENS",
+    "wr16": "IDENTICAL_TOKENS",
+    "wr32": "IDENTICAL_TOKENS",
+    "Delay_Init": "IDENTICAL_TOKENS",
+    "delay_us": "IDENTICAL_TOKENS",
+    "delay_ms": "IDENTICAL_TOKENS",
+    "SD_SPI_Init": "IDENTICAL_TOKENS",
+    "SD_SPI_Transfer": "IDENTICAL_TOKENS",
+    "SD_Select": "IDENTICAL_TOKENS",
+    "SD_Deselect": "IDENTICAL_TOKENS",
+    "SD_WaitReady": "IDENTICAL_TOKENS",
+    "SD_SendCommand": "IDENTICAL_TOKENS",
+    "SD_Init": "IDENTICAL_TOKENS",
+    "SD_ReadBlock": "IDENTICAL_TOKENS",
+    "SD_WriteBlock": "IDENTICAL_TOKENS",
+    "FAT32_ClusterLBA": "IDENTICAL_TOKENS",
+    "FAT32_ReadFAT": "IDENTICAL_TOKENS",
+    "FAT32_WriteFAT": "IDENTICAL_TOKENS",
+    "FAT32_AllocCluster": "IDENTICAL_TOKENS",
+    "FAT32_FreeChain": "MISSING",
+    "FAT32_Mount": "IDENTICAL_TOKENS",
+    "FAT32_FindRootEntry": "DIFFERENT",
+    "FAT32_UpdateLogSize": "IDENTICAL_TOKENS",
+    "FAT32_LogWrite": "IDENTICAL_TOKENS",
+    "SD_LogInit": "DIFFERENT",
+    "ESP_UART_Init": "IDENTICAL_TOKENS",
+    "ESP_UART_Write": "DIFFERENT",
+    "LogMilli": "IDENTICAL_TOKENS",
+    "LogValue": "IDENTICAL_TOKENS",
+    "Log_Sample": "DIFFERENT",
+    "main": "DIFFERENT"
+  },
+  "config": {
+    "PI_KP": {
+      "repository": "(-0.21f)",
+      "supplied": "(-0.21f)",
+      "same": true
+    },
+    "PI_KI": {
+      "repository": "(-0.0003f)",
+      "supplied": "(-0.0003f)",
+      "same": true
+    },
+    "PI_TS": {
+      "repository": "1.0f",
+      "supplied": "1.0f",
+      "same": true
+    },
+    "MIN_CURRENT": {
+      "repository": "0.5f",
+      "supplied": "0.5f",
+      "same": true
+    },
+    "MAX_CURRENT": {
+      "repository": "7.00f",
+      "supplied": "7.00f",
+      "same": true
+    },
+    "CURRENT_STEP": {
+      "repository": "0.05f",
+      "supplied": "0.05f",
+      "same": true
+    },
+    "ILIM_CODE_MIN": {
+      "repository": "0x0AU",
+      "supplied": "0x0AU",
+      "same": true
+    },
+    "ILIM_CODE_MAX": {
+      "repository": "0x8CU",
+      "supplied": "0x8CU",
+      "same": true
+    },
+    "TEC_TEMP_SETPOINT": {
+      "repository": "3.0f",
+      "supplied": "3.0f",
+      "same": true
+    },
+    "TEMP_FILTER_ALPHA": {
+      "repository": "0.25f",
+      "supplied": "0.25f",
+      "same": true
+    },
+    "CONTROL_PERIOD_MS": {
+      "repository": "1000U",
+      "supplied": "1000U",
+      "same": true
+    },
+    "COLDSINK_TEMP_CHANNEL": {
+      "repository": "2U",
+      "supplied": "2U",
+      "same": true
+    },
+    "LM51772_ADDR": {
+      "repository": "0x6AU",
+      "supplied": "0x6AU",
+      "same": true
+    },
+    "TARGET_VOUT_V": {
+      "repository": "13.0f",
+      "supplied": "13.0f",
+      "same": true
+    }
+  },
+  "pi_equal_after_local_rename": true,
+  "PB3_net": "<net code=\"54\" name=\"HSFAN_ISNS\" class=\"Default\">\n      <node ref=\"C124\" pin=\"1\" pintype=\"passive\" />\n      <node ref=\"R113\" pin=\"2\" pintype=\"passive\" />\n      <node ref=\"U1\" pin=\"55\" pinfunction=\"PB3_55\" pintype=\"bidirectional\" />\n    </net>\n    "
+}

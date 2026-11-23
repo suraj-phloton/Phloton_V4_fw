@@ -1,0 +1,4 @@
+Memory region         Used Size  Region Size  %age Used
+             RAM:        3400 B       128 KB      2.59%
+            RAM2:           0 B        32 KB      0.00%
+           FLASH:       15816 B       512 KB      3.02%

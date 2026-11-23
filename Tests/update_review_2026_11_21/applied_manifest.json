@@ -1,0 +1,20 @@
+{
+  "client_date": "2026-11-21",
+  "applied_utc": "2026-11-21T14:01:07.195210+00:00",
+  "authorization": "User: Apply the tested SWO migration",
+  "patch_sha256": "cab9cc1dbebc9c3ba6114eb5beedd24f98a75dc06671e91605ef462613b28f2e",
+  "source_sha256": {
+    "Core/Src/main.c": "e67ed10ca72f08c2666580d675665e997b82ad28802aaf198cdc2f13e196fd7c",
+    "Core/Src/phloton_feature_app.inc": "187d0306c8dbfadbddb9e6d01e93e4ddfb3c923afcb7349cb3b1a6e2b8adf5c6",
+    "Core/Src/phloton_swo.c": "97cae49980235e43938e874352bace945e8162197db1b373d18f0c8f579c353d",
+    "Core/Inc/phloton_swo.h": "dd2ecf9a251f409fd998d64de3af23d84659ee722c4a0ebdc663e58bab4fa70f"
+  },
+  "normalized_source_sha256": {
+    "Core/Src/main.c": "099011c71f38b9e7c193c63e884d3f35d92328fbaad7b284d0c3493fa73d2194",
+    "Core/Src/phloton_feature_app.inc": "187d0306c8dbfadbddb9e6d01e93e4ddfb3c923afcb7349cb3b1a6e2b8adf5c6",
+    "Core/Src/phloton_swo.c": "97cae49980235e43938e874352bace945e8162197db1b373d18f0c8f579c353d",
+    "Core/Inc/phloton_swo.h": "dd2ecf9a251f409fd998d64de3af23d84659ee722c4a0ebdc663e58bab4fa70f"
+  },
+  "flashed": false,
+  "pushed": false
+}

@@ -1,0 +1,5 @@
+Memory region         Used Size  Region Size  %age Used
+             RAM:        4672 B       128 KB      3.56%
+            RAM2:           0 B        32 KB      0.00%
+           FLASH:       19020 B       508 KB      3.66%
+         CAL_NVS:           0 B         4 KB      0.00%

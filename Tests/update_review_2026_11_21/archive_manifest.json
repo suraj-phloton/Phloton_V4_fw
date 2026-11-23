@@ -1,0 +1,75 @@
+{
+  "archive_sha256": "ae8c1bfa32596044b046954110860f848f32ec97a35f0d2c8118cbb76ca4bfde",
+  "files": [
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/.cproject",
+      "bytes": 26032,
+      "sha256": "c078269886c93104d991e620ee025252c8965e6da665c78f6186d59d8e985ed7"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/.project",
+      "bytes": 1227,
+      "sha256": "96f9819302bc4b8a67035638e1511ee84dc60fc2557ef2393ded9e8f68f1a45d"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Inc/main.h",
+      "bytes": 2003,
+      "sha256": "b8bb9754831746eafe48b99ae052faaf36c7b6a4df5c8e9075421c14c2c8472b"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Inc/stm32l4xx_hal_conf.h",
+      "bytes": 17164,
+      "sha256": "7cbba241bd4b836ff78e57275637125cb21a09f9d54bf57e4efd2ac08497248f"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Inc/stm32l4xx_it.h",
+      "bytes": 1926,
+      "sha256": "a0c83dbe5da0255aa42d9032427a14940df037d03a7afa362e506702af5f22a8"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Src/main.c",
+      "bytes": 98719,
+      "sha256": "18cc6dbdedfce27fc7eac3596b3ff5b3f4beef0342692aee8075a0f5034d5a90"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Src/stm32l4xx_hal_msp.c",
+      "bytes": 2231,
+      "sha256": "0152c615733df6227f43b5fcf321b87ef03375585798ec9366fb02853ce5e983"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Src/stm32l4xx_it.c",
+      "bytes": 5428,
+      "sha256": "c83a82ab4e50fa3997230c0cca0a485b9f73691e2a35d3ed436b5bec48194a3d"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Src/syscalls.c",
+      "bytes": 2847,
+      "sha256": "1589f3d61a3625fb2e4604c6ffd48518fda29d1b78bf774b2d91d76236e1777f"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Src/sysmem.c",
+      "bytes": 2726,
+      "sha256": "ae7da85ddcf68727218002cace4d885d363c9e1cd1955ca1b10ccc5e3075b9b5"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/Core/Src/system_stm32l4xx.c",
+      "bytes": 12538,
+      "sha256": "e8a6b52966fe3a1ac5ecd8afb23b90bf33af553da6a9cb051795e49ca97483f3"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/STM32L451RETX_FLASH.ld",
+      "bytes": 5405,
+      "sha256": "562b7d8aaa5b6b5d0963f68ef92202e81c8e4de41f63923171a3780e59de8f7f"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/STM32L451RETX_RAM.ld",
+      "bytes": 5398,
+      "sha256": "97dda8eaa74f1388f917db2f921c2159889d52052dca81e38e169e4e5a1bb334"
+    },
+    {
+      "path": "STM_LM_SD_LOGGING_ITM/STM_LM_SD_LOGGING_ITM.ioc",
+      "bytes": 3305,
+      "sha256": "33b24dbbc52298999d27dc6c749ef3202100b35a1ab9879cc1486c33ef042ab4"
+    }
+  ]
+}

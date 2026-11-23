@@ -1,5 +1,5 @@
 /* Application integration: included once by main.c after the register drivers. */
-const char firmware_build_id[] = "PHV4-PI-DIAGNOSTICS-20261115-A";
+const char firmware_build_id[] = "PHV4-SWO-DIAGNOSTICS-20261121-A";
 
 static void Features_Beep(uint8_t kind)
 {
